@@ -46,13 +46,13 @@ func (m *miniRedisCache) Close() error {
 }
 
 // Del implements cache.Interface.
-func (m *miniRedisCache) Del(ctx context.Context, key string) error {
-	return m.cli.Del(ctx, key).Err()
+func (m *miniRedisCache) Del(ctx context.Context, key cache.K) error {
+	return m.cli.Del(ctx, key.String()).Err()
 }
 
 // Exists implements cache.Interface.
-func (m *miniRedisCache) Exists(ctx context.Context, key string) (bool, error) {
-	res, err := m.cli.Exists(ctx, key).Result()
+func (m *miniRedisCache) Exists(ctx context.Context, key cache.K) (bool, error) {
+	res, err := m.cli.Exists(ctx, key.String()).Result()
 	if err != nil {
 		return false, err
 	}
@@ -60,23 +60,23 @@ func (m *miniRedisCache) Exists(ctx context.Context, key string) (bool, error) {
 }
 
 // Get implements cache.Interface.
-func (m *miniRedisCache) Get(ctx context.Context, key string) (string, error) {
-	return m.cli.Get(ctx, key).Result()
+func (m *miniRedisCache) Get(ctx context.Context, key cache.K) (string, error) {
+	return m.cli.Get(ctx, key.String()).Result()
 }
 
 // Set implements cache.Interface.
-func (m *miniRedisCache) Set(ctx context.Context, key string, value string, ttl time.Duration) error {
-	return m.cli.Set(ctx, key, value, ttl).Err()
+func (m *miniRedisCache) Set(ctx context.Context, key cache.K, value string, ttl time.Duration) error {
+	return m.cli.Set(ctx, key.String(), value, ttl).Err()
 }
 
 // HDel implements cache.Interface.
-func (m *miniRedisCache) HDel(ctx context.Context, key string, field string) error {
-	return m.cli.HDel(ctx, key, field).Err()
+func (m *miniRedisCache) HDel(ctx context.Context, key cache.K, field string) error {
+	return m.cli.HDel(ctx, key.String(), field).Err()
 }
 
 // HExists implements cache.Interface.
-func (m *miniRedisCache) HExists(ctx context.Context, key string, field string) (bool, error) {
-	res, err := m.cli.HExists(ctx, key, field).Result()
+func (m *miniRedisCache) HExists(ctx context.Context, key cache.K, field string) (bool, error) {
+	res, err := m.cli.HExists(ctx, key.String(), field).Result()
 	if err != nil {
 		return false, err
 	}
@@ -84,13 +84,13 @@ func (m *miniRedisCache) HExists(ctx context.Context, key string, field string) 
 }
 
 // HGet implements cache.Interface.
-func (m *miniRedisCache) HGet(ctx context.Context, key string, field string) (string, error) {
-	return m.cli.HGet(ctx, key, field).Result()
+func (m *miniRedisCache) HGet(ctx context.Context, key cache.K, field string) (string, error) {
+	return m.cli.HGet(ctx, key.String(), field).Result()
 }
 
 // HMGet implements cache.Interface.
-func (m *miniRedisCache) HMGet(ctx context.Context, key string, fields ...string) ([][]byte, error) {
-	res, err := m.cli.HMGet(ctx, key, fields...).Result()
+func (m *miniRedisCache) HMGet(ctx context.Context, key cache.K, fields ...string) ([][]byte, error) {
+	res, err := m.cli.HMGet(ctx, key.String(), fields...).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -111,17 +111,17 @@ func (m *miniRedisCache) HMGet(ctx context.Context, key string, fields ...string
 }
 
 // HMSet implements cache.Interface.
-func (m *miniRedisCache) HMSet(ctx context.Context, key string, fields map[string]string) error {
-	return m.cli.HMSet(ctx, key, fields).Err()
+func (m *miniRedisCache) HMSet(ctx context.Context, key cache.K, fields map[string]string) error {
+	return m.cli.HMSet(ctx, key.String(), fields).Err()
 }
 
 // HSet implements cache.Interface.
-func (m *miniRedisCache) HSet(ctx context.Context, key string, field string, value string) error {
-	return m.cli.HSet(ctx, key, field, value).Err()
+func (m *miniRedisCache) HSet(ctx context.Context, key cache.K, field string, value string) error {
+	return m.cli.HSet(ctx, key.String(), field, value).Err()
 }
 
 // IncMax implements cache.Interface.
-func (m *miniRedisCache) IncMax(ctx context.Context, key string, max int, ttl time.Duration) (bool, error) {
+func (m *miniRedisCache) IncMax(ctx context.Context, key cache.K, max int, ttl time.Duration) (bool, error) {
 	res, err := m.cli.Eval(ctx, `
 		local key = KEYS[1]
 		local max = tonumber(ARGV[1])
@@ -137,7 +137,7 @@ func (m *miniRedisCache) IncMax(ctx context.Context, key string, max int, ttl ti
 		end
 		redis.call("incr", key)
 		return current
-	`, []string{key}, max, int(ttl.Seconds())).Int()
+	`, []string{key.String()}, max, int(ttl.Seconds())).Int()
 	if err != nil {
 		return false, err
 	}
@@ -145,31 +145,31 @@ func (m *miniRedisCache) IncMax(ctx context.Context, key string, max int, ttl ti
 }
 
 // Lock implements cache.Interface.
-func (m *miniRedisCache) Lock(ctx context.Context, key string, ttl time.Duration) (bool, error) {
-	return m.cli.SetNX(ctx, key, 1, ttl).Result()
+func (m *miniRedisCache) Lock(ctx context.Context, key cache.K, ttl time.Duration) (bool, error) {
+	return m.cli.SetNX(ctx, key.String(), 1, ttl).Result()
 }
 
 // Unlock implements cache.Interface.
-func (m *miniRedisCache) Unlock(ctx context.Context, key string) error {
-	return m.cli.Del(ctx, key).Err()
+func (m *miniRedisCache) Unlock(ctx context.Context, key cache.K) error {
+	return m.cli.Del(ctx, key.String()).Err()
 }
 
 // ZAdd implements cache.Interface.
-func (m *miniRedisCache) ZAdd(ctx context.Context, key string, score float64, member string) error {
-	return m.cli.ZAdd(ctx, key, redis.Z{
+func (m *miniRedisCache) ZAdd(ctx context.Context, key cache.K, score float64, member string) error {
+	return m.cli.ZAdd(ctx, key.String(), redis.Z{
 		Score:  score,
 		Member: member,
 	}).Err()
 }
 
 // ZRange implements cache.Interface.
-func (m *miniRedisCache) ZRange(ctx context.Context, key string, start int, stop int) ([]string, error) {
-	return m.cli.ZRange(ctx, key, int64(start), int64(stop)).Result()
+func (m *miniRedisCache) ZRange(ctx context.Context, key cache.K, start int, stop int) ([]string, error) {
+	return m.cli.ZRange(ctx, key.String(), int64(start), int64(stop)).Result()
 }
 
 // ZRangeByScore implements cache.Interface.
-func (m *miniRedisCache) ZRangeByScore(ctx context.Context, key string, min float64, max float64) ([]string, error) {
-	return m.cli.ZRangeByScore(ctx, key, &redis.ZRangeBy{
+func (m *miniRedisCache) ZRangeByScore(ctx context.Context, key cache.K, min float64, max float64) ([]string, error) {
+	return m.cli.ZRangeByScore(ctx, key.String(), &redis.ZRangeBy{
 		Min:    strconv.FormatFloat(min, 'f', -1, 64),
 		Max:    strconv.FormatFloat(max, 'f', -1, 64),
 		Offset: 0,
@@ -178,11 +178,11 @@ func (m *miniRedisCache) ZRangeByScore(ctx context.Context, key string, min floa
 }
 
 // ZRem implements cache.Interface.
-func (m *miniRedisCache) ZRem(ctx context.Context, key string, member string) error {
-	return m.cli.ZRem(ctx, key, member).Err()
+func (m *miniRedisCache) ZRem(ctx context.Context, key cache.K, member string) error {
+	return m.cli.ZRem(ctx, key.String(), member).Err()
 }
 
 // ZRemRangeByScore implements cache.Interface.
-func (m *miniRedisCache) ZRemRangeByScore(ctx context.Context, key string, min float64, max float64) error {
-	return m.cli.ZRemRangeByScore(ctx, key, strconv.FormatFloat(min, 'f', -1, 64), strconv.FormatFloat(max, 'f', -1, 64)).Err()
+func (m *miniRedisCache) ZRemRangeByScore(ctx context.Context, key cache.K, min float64, max float64) error {
+	return m.cli.ZRemRangeByScore(ctx, key.String(), strconv.FormatFloat(min, 'f', -1, 64), strconv.FormatFloat(max, 'f', -1, 64)).Err()
 }
