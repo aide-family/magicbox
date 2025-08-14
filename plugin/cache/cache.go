@@ -24,7 +24,7 @@ type Interface interface {
 	Exists(ctx context.Context, key string) (bool, error)
 
 	// IncMax increments the value of the key by the given amount.
-	IncMax(ctx context.Context, key string, max int) (int, error)
+	IncMax(ctx context.Context, key string, max int, ttl time.Duration) (bool, error)
 
 	// Lock locks the key.
 	Lock(ctx context.Context, key string, ttl time.Duration) (bool, error)
@@ -48,10 +48,7 @@ type Interface interface {
 	HMSet(ctx context.Context, key string, fields map[string]string) error
 
 	// HMGet gets the values of the fields in the hash.
-	HMGet(ctx context.Context, key string, fields ...string) ([]string, error)
-
-	// HMDel deletes the fields in the hash.
-	HMDel(ctx context.Context, key string, fields ...string) error
+	HMGet(ctx context.Context, key string, fields ...string) ([][]byte, error)
 
 	// ZAdd adds a member to the sorted set.
 	ZAdd(ctx context.Context, key string, score float64, member string) error
