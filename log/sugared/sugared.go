@@ -1,3 +1,4 @@
+// Package sugared is a log driver for sugared logger.
 package sugared
 
 import (

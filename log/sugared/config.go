@@ -4,6 +4,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
+// Config is a config for the logger.
 type Config interface {
 	GetLevel() log.Level
 	GetFormat() Formatter
@@ -14,9 +15,10 @@ type Config interface {
 	IsDev() bool
 }
 
+// Formatter is a formatter for the logger.
 type Formatter string
 
 const (
 	FormatterConsole Formatter = "console"
-	FormatterJSON              = "json"
+	FormatterJSON    Formatter = "json"
 )
