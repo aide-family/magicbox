@@ -78,7 +78,13 @@ func WithHeaders(headers map[string][]string) Option {
 
 func WithQuery(query url.Values) Option {
 	return func(req *http.Request) {
-		req.URL.RawQuery = query.Encode()
+		oldQuery := req.URL.Query()
+		for key, values := range query {
+			for _, value := range values {
+				oldQuery.Add(key, value)
+			}
+		}
+		req.URL.RawQuery = oldQuery.Encode()
 	}
 }
 
