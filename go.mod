@@ -8,11 +8,15 @@ require (
 	github.com/alicebob/miniredis/v2 v2.35.0
 	github.com/go-kratos/kratos/v2 v2.8.4
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/nicksnyder/go-i18n/v2 v2.6.0
+	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/redis/go-redis/v9 v9.12.1
 	go.uber.org/zap v1.27.0
+	golang.org/x/text v0.23.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.1
+	sigs.k8s.io/yaml v1.6.0
 )
 
 require (
@@ -27,5 +31,5 @@ require (
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	go.yaml.in/yaml/v2 v2.4.2 // indirect
 )
