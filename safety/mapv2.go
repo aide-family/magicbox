@@ -6,13 +6,14 @@ import (
 	"sync"
 )
 
+// SyncMap is a thread-safe map that wraps sync.Map.
+// The mu mutex is only used to protect the m pointer during replacement (e.g., Clear, Unmarshal).
+// All other operations rely on sync.Map's internal concurrency safety.
 type SyncMap[K comparable, V any] struct {
 	mu sync.RWMutex
 	m  *sync.Map
 }
 
-var _ json.Marshaler = (*SyncMap[string, any])(nil)
-var _ json.Unmarshaler = (*SyncMap[string, any])(nil)
 var _ encoding.BinaryMarshaler = (*SyncMap[string, any])(nil)
 var _ encoding.BinaryUnmarshaler = (*SyncMap[string, any])(nil)
 
@@ -62,11 +63,10 @@ func (m *SyncMap[K, V]) DeleteFunc(f func(k K, v V) bool) *SyncMap[K, V] {
 	return m
 }
 
-func (m *SyncMap[K, V]) Range(f func(k K, v V) bool) *SyncMap[K, V] {
+func (m *SyncMap[K, V]) Range(f func(k K, v V) bool) {
 	m.m.Range(func(k, v any) bool {
 		return f(k.(K), v.(V))
 	})
-	return m
 }
 
 func (m *SyncMap[K, V]) Len() int {
@@ -97,6 +97,8 @@ func (m *SyncMap[K, V]) Values() []V {
 }
 
 func (m *SyncMap[K, V]) Clear() *SyncMap[K, V] {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.m = &sync.Map{}
 	return m
 }
@@ -119,23 +121,6 @@ func (m *SyncMap[K, V]) Map() map[K]V {
 	return newMap
 }
 
-func (m *SyncMap[K, V]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(m.Map())
-}
-
-func (m *SyncMap[K, V]) UnmarshalJSON(data []byte) error {
-	var newMap map[K]V
-	if err := json.Unmarshal(data, &newMap); err != nil {
-		return err
-	}
-	newSyncMap := &sync.Map{}
-	for k, v := range newMap {
-		newSyncMap.Store(k, v)
-	}
-	m.m = newSyncMap
-	return nil
-}
-
 func (m *SyncMap[K, V]) UnmarshalBinary(data []byte) error {
 	var newMap map[K]V
 	if err := json.Unmarshal(data, &newMap); err != nil {
@@ -145,6 +130,8 @@ func (m *SyncMap[K, V]) UnmarshalBinary(data []byte) error {
 	for k, v := range newMap {
 		newSyncMap.Store(k, v)
 	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.m = newSyncMap
 	return nil
 }

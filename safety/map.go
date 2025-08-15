@@ -8,8 +8,6 @@ import (
 	"sync"
 )
 
-var _ json.Marshaler = (*Map[string, any])(nil)
-var _ json.Unmarshaler = (*Map[string, any])(nil)
 var _ encoding.BinaryMarshaler = (*Map[string, any])(nil)
 var _ encoding.BinaryUnmarshaler = (*Map[string, any])(nil)
 
@@ -59,7 +57,7 @@ func (m *Map[K, V]) DeleteFunc(f func(k K, v V) bool) *Map[K, V] {
 	return m
 }
 
-func (m *Map[K, V]) Range(f func(k K, v V) bool) *Map[K, V] {
+func (m *Map[K, V]) Range(f func(k K, v V) bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	for k, v := range m.m {
@@ -67,7 +65,6 @@ func (m *Map[K, V]) Range(f func(k K, v V) bool) *Map[K, V] {
 			break
 		}
 	}
-	return m
 }
 
 func (m *Map[K, V]) Len() int {
@@ -117,23 +114,21 @@ func (m *Map[K, V]) Map() map[K]V {
 	return maps.Clone(m.m)
 }
 
-func (m *Map[K, V]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(m.m)
-}
-
-func (m *Map[K, V]) UnmarshalJSON(data []byte) error {
-	return json.Unmarshal(data, &m.m)
-}
-
 func (m *Map[K, V]) UnmarshalBinary(data []byte) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return json.Unmarshal(data, &m.m)
 }
 
 func (m *Map[K, V]) MarshalBinary() (data []byte, err error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
 	return json.Marshal(m.m)
 }
 
 func (m *Map[K, V]) String() string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
 	bs, _ := json.Marshal(m.m)
 	return string(bs)
 }
