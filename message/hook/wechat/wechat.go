@@ -3,13 +3,11 @@ package wechat
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"net/http"
 	"net/url"
 
 	"github.com/aide-family/magicbox/httpx"
 	"github.com/aide-family/magicbox/message"
+	"github.com/aide-family/magicbox/message/hook"
 )
 
 var _ message.Sender = (*wechatHookSender)(nil)
@@ -51,14 +49,5 @@ func (w *wechatHookSender) Send(ctx context.Context, message message.Message) er
 		return err
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusOK {
-		return unmarshalResponse(resp.Body)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	return fmt.Errorf("status code: %d, body: %s", resp.StatusCode, string(body))
+	return hook.RequestAssert(resp, unmarshalResponse)
 }

@@ -3,12 +3,11 @@ package other
 
 import (
 	"context"
-	"fmt"
 	"io"
-	"net/http"
 
 	"github.com/aide-family/magicbox/httpx"
 	"github.com/aide-family/magicbox/message"
+	"github.com/aide-family/magicbox/message/hook"
 )
 
 var _ message.Sender = (*otherHookSender)(nil)
@@ -47,14 +46,9 @@ func (o *otherHookSender) Send(ctx context.Context, message message.Message) err
 		return err
 	}
 	defer resp.Body.Close()
+	return hook.RequestAssert(resp, unmarshalResponse)
+}
 
-	if resp.StatusCode == http.StatusOK {
-		return nil
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	return fmt.Errorf("status code: %d, body: %s", resp.StatusCode, string(body))
+func unmarshalResponse(body io.ReadCloser) error {
+	return nil
 }
