@@ -1,4 +1,4 @@
-package builder
+package feishu
 
 import "github.com/aide-family/magicbox/message"
 

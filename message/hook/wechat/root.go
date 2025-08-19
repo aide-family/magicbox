@@ -1,6 +1,11 @@
-package builder
+// Package wechat provides a set of message types for WeChat.
+package wechat
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/aide-family/magicbox/message"
+)
 
 type MessageType string
 
@@ -19,10 +24,13 @@ type Message struct {
 	Image      *ImageMessage      `json:"image,omitempty"`
 }
 
-func (m *Message) Message() []byte {
-	json, err := json.Marshal(m)
-	if err != nil {
-		return []byte{}
+func (m *Message) Message(channel message.MessageChannel) ([]byte, error) {
+	if err := MessageChannelWechat.Check(channel); err != nil {
+		return nil, err
 	}
-	return json
+	jsonBytes, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return jsonBytes, nil
 }

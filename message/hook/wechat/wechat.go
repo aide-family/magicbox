@@ -3,6 +3,7 @@ package wechat
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 
 	"github.com/aide-family/magicbox/httpx"
@@ -12,6 +13,8 @@ import (
 
 var _ message.Sender = (*wechatHookSender)(nil)
 var _ message.Driver = (*initializer)(nil)
+
+const MessageChannelWechat message.MessageChannel = "webhook-wechat"
 
 func SenderDriver(config Config) message.Driver {
 	return &initializer{config: config}
@@ -35,7 +38,7 @@ type wechatHookSender struct {
 }
 
 // Send implements message.Sender.
-func (w *wechatHookSender) Send(ctx context.Context, message message.Message) error {
+func (w *wechatHookSender) Send(ctx context.Context, msg message.Message) error {
 	opts := []httpx.Option{
 		httpx.WithHeaders(map[string][]string{
 			"Content-Type": {"application/json"},
@@ -44,7 +47,22 @@ func (w *wechatHookSender) Send(ctx context.Context, message message.Message) er
 			"key": {w.config.GetSecret()},
 		}),
 	}
-	resp, err := w.cli.Post(ctx, w.config.GetURL(), message.Message(), opts...)
+	var newMessage *Message
+	var ok bool
+	if newMessage, ok = msg.(*Message); !ok {
+		jsonBytes, err := msg.Message(MessageChannelWechat)
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(jsonBytes, newMessage); err != nil {
+			return err
+		}
+	}
+	jsonBytes, err := newMessage.Message(MessageChannelWechat)
+	if err != nil {
+		return err
+	}
+	resp, err := w.cli.Post(ctx, w.config.GetURL(), jsonBytes, opts...)
 	if err != nil {
 		return err
 	}

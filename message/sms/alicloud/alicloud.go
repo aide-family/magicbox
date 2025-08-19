@@ -17,6 +17,8 @@ import (
 var _ message.Driver = (*initializer)(nil)
 var _ message.Sender = (*alicloudSmsSender)(nil)
 
+const MessageChannelSMSAliCloud message.MessageChannel = "sms-alicloud"
+
 func SenderDriver(config Config) message.Driver {
 	return &initializer{config: config}
 }
@@ -61,12 +63,15 @@ type alicloudSmsSender struct {
 }
 
 // Send implements message.Sender.
-func (a *alicloudSmsSender) Send(ctx context.Context, message message.Message) error {
+func (a *alicloudSmsSender) Send(ctx context.Context, msg message.Message) error {
 	newMessage := &Message{}
-	if alicloudMessage, ok := message.(*Message); ok {
-		newMessage = alicloudMessage
-	} else {
-		if err := json.Unmarshal(message.Message(), newMessage); err != nil {
+	var ok bool
+	if newMessage, ok = msg.(*Message); !ok {
+		jsonBytes, err := msg.Message(MessageChannelSMSAliCloud)
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(jsonBytes, newMessage); err != nil {
 			return err
 		}
 	}

@@ -14,8 +14,17 @@ import (
 	"github.com/aide-family/magicbox/strutil"
 )
 
+type MessageChannel string
+
+func (m MessageChannel) Check(channel MessageChannel) error {
+	if m == channel {
+		return nil
+	}
+	return fmt.Errorf("channel %s not supported, only %s is supported", channel, m)
+}
+
 type Message interface {
-	Message() []byte
+	Message(MessageChannel) ([]byte, error)
 }
 
 func TextFormatter(format string, data any) (string, error) {

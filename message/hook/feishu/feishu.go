@@ -3,13 +3,8 @@ package feishu
 
 import (
 	"context"
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"net/url"
-	"strconv"
-	"time"
 
 	"github.com/aide-family/magicbox/httpx"
 	"github.com/aide-family/magicbox/message"
@@ -48,19 +43,18 @@ func (f *feishuHookSender) Send(ctx context.Context, message message.Message) er
 		}),
 	}
 
-	msg := make(map[string]any)
-	if err := json.Unmarshal(message.Message(), &msg); err != nil {
-		return err
+	feishuMessage := &Message{}
+	var ok bool
+	if feishuMessage, ok = message.(*Message); !ok {
+		jsonBytes, err := message.Message(MessageChannelFeishu)
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(jsonBytes, feishuMessage); err != nil {
+			return err
+		}
 	}
-	requestTime := time.Now().Unix()
-	msg["timestamp"] = strconv.FormatInt(requestTime, 10)
-	sign, err := f.sign(requestTime)
-	if err != nil {
-		return err
-	}
-	msg["sign"] = sign
-	requestBody, err := json.Marshal(msg)
-	if err != nil {
+	if err := feishuMessage.Signature(f.config.GetSecret()); err != nil {
 		return err
 	}
 
@@ -69,25 +63,14 @@ func (f *feishuHookSender) Send(ctx context.Context, message message.Message) er
 		return err
 	}
 	u.Path += "/" + f.config.GetKey()
-	resp, err := f.cli.Post(ctx, u.String(), requestBody, opts...)
+	jsonBytes, err := feishuMessage.Message(MessageChannelFeishu)
+	if err != nil {
+		return err
+	}
+	resp, err := f.cli.Post(ctx, u.String(), jsonBytes, opts...)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 	return hook.RequestAssert(resp, unmarshalResponse)
-}
-
-func (f *feishuHookSender) sign(timestamp int64) (string, error) {
-	// timestamp + key sha256, then base64 encode
-	signString := strconv.FormatInt(timestamp, 10) + "\n" + f.config.GetSecret()
-
-	var data []byte
-	h := hmac.New(sha256.New, []byte(signString))
-	_, err := h.Write(data)
-	if err != nil {
-		return "", err
-	}
-
-	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
-	return signature, nil
 }

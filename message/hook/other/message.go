@@ -10,10 +10,10 @@ var _ message.Message = (*Message)(nil)
 
 type Message map[string]any
 
-func (m *Message) Message() []byte {
+func (m *Message) Message(channel message.MessageChannel) ([]byte, error) {
 	json, err := json.Marshal(m)
 	if err != nil {
-		return []byte{}
+		return nil, err
 	}
-	return json
+	return json, nil
 }

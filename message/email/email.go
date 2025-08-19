@@ -34,22 +34,25 @@ type emailSender struct {
 	config Config
 }
 
-func (e *emailSender) Send(ctx context.Context, message message.Message) error {
-	newMessage := &Message{}
-	if emailMessage, ok := message.(*Message); ok {
-		newMessage = emailMessage
-	} else {
-		if err := json.Unmarshal(message.Message(), newMessage); err != nil {
+func (e *emailSender) Send(ctx context.Context, m message.Message) error {
+	emailMessage := &Message{}
+	var ok bool
+	if emailMessage, ok = m.(*Message); !ok {
+		jsonBytes, err := m.Message(MessageChannelEmail)
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(jsonBytes, emailMessage); err != nil {
 			return err
 		}
 	}
 	msg := gomail.NewMessage(gomail.SetCharset("UTF-8"), gomail.SetEncoding(gomail.Base64))
 	msg.SetHeader("From", e.config.GetUsername())
-	msg.SetHeader("To", newMessage.To...)
-	msg.SetHeader("Cc", newMessage.Cc...)
-	msg.SetHeader("Subject", newMessage.Subject)
-	msg.SetBody(newMessage.ContentType, newMessage.Body)
-	for _, attachment := range newMessage.Attachments {
+	msg.SetHeader("To", emailMessage.To...)
+	msg.SetHeader("Cc", emailMessage.Cc...)
+	msg.SetHeader("Subject", emailMessage.Subject)
+	msg.SetBody(emailMessage.ContentType, emailMessage.Body)
+	for _, attachment := range emailMessage.Attachments {
 		msg.Attach(attachment.Filename, gomail.SetHeader(map[string][]string{
 			"Content-Disposition": {"attachment"},
 		}), gomail.SetCopyFunc(func(w io.Writer) error {
@@ -57,7 +60,7 @@ func (e *emailSender) Send(ctx context.Context, message message.Message) error {
 			return err
 		}))
 	}
-	for key, values := range newMessage.Headers {
+	for key, values := range emailMessage.Headers {
 		msg.SetHeader(key, values...)
 	}
 	return e.dialer.DialAndSend(msg)

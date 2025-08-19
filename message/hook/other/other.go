@@ -13,6 +13,8 @@ import (
 var _ message.Sender = (*otherHookSender)(nil)
 var _ message.Driver = (*initializer)(nil)
 
+const MessageChannelOther message.MessageChannel = "webhook-other"
+
 func SenderDriver(config Config) message.Driver {
 	return &initializer{config: config}
 }
@@ -41,7 +43,12 @@ func (o *otherHookSender) Send(ctx context.Context, message message.Message) err
 		httpx.WithBasicAuth(o.config.GetBasicAuth()),
 	}
 
-	resp, err := o.cli.Post(ctx, o.config.GetURL(), message.Message(), opts...)
+	jsonBytes, err := message.Message(MessageChannelOther)
+	if err != nil {
+		return err
+	}
+
+	resp, err := o.cli.Post(ctx, o.config.GetURL(), jsonBytes, opts...)
 	if err != nil {
 		return err
 	}

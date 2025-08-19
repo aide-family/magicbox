@@ -14,10 +14,13 @@ type Message struct {
 	PhoneNumbers  []string `json:"phoneNumbers"`
 }
 
-func (m *Message) Message() []byte {
-	json, err := json.Marshal(m)
-	if err != nil {
-		return []byte{}
+func (m *Message) Message(channel message.MessageChannel) ([]byte, error) {
+	if err := MessageChannelSMSAliCloud.Check(channel); err != nil {
+		return nil, err
 	}
-	return json
+	jsonBytes, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return jsonBytes, nil
 }

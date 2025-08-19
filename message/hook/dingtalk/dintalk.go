@@ -19,6 +19,8 @@ import (
 var _ message.Sender = (*dingtalkHookSender)(nil)
 var _ message.Driver = (*initializer)(nil)
 
+const MessageChannelDingTalk message.MessageChannel = "webhook-dingtalk"
+
 func SenderDriver(config Config) message.Driver {
 	return &initializer{config: config}
 }
@@ -53,7 +55,12 @@ func (d *dingtalkHookSender) Send(ctx context.Context, message message.Message) 
 		}),
 	}
 
-	resp, err := d.cli.Post(ctx, d.config.GetURL(), message.Message(), opts...)
+	jsonBytes, err := message.Message(MessageChannelDingTalk)
+	if err != nil {
+		return err
+	}
+
+	resp, err := d.cli.Post(ctx, d.config.GetURL(), jsonBytes, opts...)
 	if err != nil {
 		return err
 	}

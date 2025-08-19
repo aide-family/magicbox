@@ -1,4 +1,4 @@
-package builder
+package wechat
 
 import "github.com/aide-family/magicbox/message"
 
