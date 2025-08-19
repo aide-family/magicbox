@@ -53,7 +53,7 @@ func (d *dingtalkHookSender) Send(ctx context.Context, message message.Message) 
 		}),
 	}
 
-	resp, err := d.cli.Post(ctx, d.config.GetURL(), message, opts...)
+	resp, err := d.cli.Post(ctx, d.config.GetURL(), message.Message(), opts...)
 	if err != nil {
 		return err
 	}

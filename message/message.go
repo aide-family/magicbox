@@ -14,7 +14,9 @@ import (
 	"github.com/aide-family/magicbox/strutil"
 )
 
-type Message []byte
+type Message interface {
+	Message() []byte
+}
 
 func TextFormatter(format string, data any) (string, error) {
 	if format == "" {

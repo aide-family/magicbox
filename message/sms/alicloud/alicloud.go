@@ -63,7 +63,7 @@ type alicloudSmsSender struct {
 // Send implements message.Sender.
 func (a *alicloudSmsSender) Send(ctx context.Context, message message.Message) error {
 	var newMessage Message
-	if err := json.Unmarshal(message, &newMessage); err != nil {
+	if err := json.Unmarshal(message.Message(), &newMessage); err != nil {
 		return err
 	}
 	if len(newMessage.PhoneNumbers) == 0 {

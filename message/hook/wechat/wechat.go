@@ -44,7 +44,7 @@ func (w *wechatHookSender) Send(ctx context.Context, message message.Message) er
 			"key": {w.config.GetSecret()},
 		}),
 	}
-	resp, err := w.cli.Post(ctx, w.config.GetURL(), message, opts...)
+	resp, err := w.cli.Post(ctx, w.config.GetURL(), message.Message(), opts...)
 	if err != nil {
 		return err
 	}

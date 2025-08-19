@@ -41,7 +41,7 @@ func (o *otherHookSender) Send(ctx context.Context, message message.Message) err
 		httpx.WithBasicAuth(o.config.GetBasicAuth()),
 	}
 
-	resp, err := o.cli.Post(ctx, o.config.GetURL(), message, opts...)
+	resp, err := o.cli.Post(ctx, o.config.GetURL(), message.Message(), opts...)
 	if err != nil {
 		return err
 	}

@@ -49,7 +49,7 @@ func (f *feishuHookSender) Send(ctx context.Context, message message.Message) er
 	}
 
 	msg := make(map[string]any)
-	if err := json.Unmarshal(message, &msg); err != nil {
+	if err := json.Unmarshal(message.Message(), &msg); err != nil {
 		return err
 	}
 	requestTime := time.Now().Unix()
