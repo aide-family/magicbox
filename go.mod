@@ -5,7 +5,10 @@ go 1.24.5
 require (
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
 	entgo.io/ent v0.14.5
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.2
 	github.com/alibabacloud-go/dysmsapi-20170525/v3 v3.0.6
+	github.com/alibabacloud-go/tea v1.1.19
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.3
 	github.com/alicebob/miniredis/v2 v2.35.0
 	github.com/go-kratos/kratos/v2 v2.8.4
 	github.com/go-sql-driver/mysql v1.8.1
@@ -25,13 +28,10 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.2 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
 	github.com/alibabacloud-go/endpoint-util v1.1.0 // indirect
 	github.com/alibabacloud-go/openapi-util v0.1.0 // indirect
-	github.com/alibabacloud-go/tea v1.1.19 // indirect
 	github.com/alibabacloud-go/tea-utils v1.3.1 // indirect
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.3 // indirect
 	github.com/alibabacloud-go/tea-xml v1.1.2 // indirect
 	github.com/aliyun/credentials-go v1.1.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

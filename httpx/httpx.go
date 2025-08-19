@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"io"
 	"net/http"
 	"net/url"
 	"sync"
@@ -35,8 +36,8 @@ func NewClient(client *http.Client) *Client {
 	return &Client{client: client}
 }
 
-func (c *Client) Get(ctx context.Context, url string, options ...Option) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+func (c *Client) Do(ctx context.Context, method Method, url string, options ...Option) (*http.Response, error) {
+	req, err := http.NewRequest(string(method), url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -46,15 +47,20 @@ func (c *Client) Get(ctx context.Context, url string, options ...Option) (*http.
 	return c.client.Do(req.WithContext(ctx))
 }
 
+func (c *Client) Get(ctx context.Context, url string, options ...Option) (*http.Response, error) {
+	return c.Do(ctx, MethodGet, url, options...)
+}
+
 func (c *Client) Post(ctx context.Context, url string, body []byte, options ...Option) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-	for _, option := range options {
-		option(req)
-	}
-	return c.client.Do(req.WithContext(ctx))
+	return c.Do(ctx, MethodPost, url, options...)
+}
+
+func (c *Client) Put(ctx context.Context, url string, body []byte, options ...Option) (*http.Response, error) {
+	return c.Do(ctx, MethodPut, url, options...)
+}
+
+func (c *Client) Delete(ctx context.Context, url string, options ...Option) (*http.Response, error) {
+	return c.Do(ctx, MethodDelete, url, options...)
 }
 
 func WithBasicAuth(basicAuth *BasicAuth) Option {
@@ -85,6 +91,18 @@ func WithQuery(query url.Values) Option {
 			}
 		}
 		req.URL.RawQuery = oldQuery.Encode()
+	}
+}
+
+func WithBody(body []byte) Option {
+	return func(req *http.Request) {
+		req.Body = io.NopCloser(bytes.NewReader(body))
+	}
+}
+
+func WithBodyReader(body io.Reader) Option {
+	return func(req *http.Request) {
+		req.Body = io.NopCloser(body)
 	}
 }
 
