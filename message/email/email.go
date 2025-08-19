@@ -35,9 +35,13 @@ type emailSender struct {
 }
 
 func (e *emailSender) Send(ctx context.Context, message message.Message) error {
-	var newMessage Message
-	if err := json.Unmarshal(message.Message(), &newMessage); err != nil {
-		return err
+	newMessage := &Message{}
+	if emailMessage, ok := message.(*Message); ok {
+		newMessage = emailMessage
+	} else {
+		if err := json.Unmarshal(message.Message(), newMessage); err != nil {
+			return err
+		}
 	}
 	msg := gomail.NewMessage(gomail.SetCharset("UTF-8"), gomail.SetEncoding(gomail.Base64))
 	msg.SetHeader("From", e.config.GetUsername())
