@@ -48,7 +48,7 @@ func TextFormatter(format string, data any) (string, error) {
 	return resultIoWriter.String(), nil
 }
 
-func HtmlFormatter(format string, data any) (string, error) {
+func HTMLFormatter(format string, data any) (string, error) {
 	if format == "" {
 		return "", fmt.Errorf("format is null")
 	}
