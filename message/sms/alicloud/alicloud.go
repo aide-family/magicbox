@@ -62,9 +62,13 @@ type alicloudSmsSender struct {
 
 // Send implements message.Sender.
 func (a *alicloudSmsSender) Send(ctx context.Context, message message.Message) error {
-	var newMessage Message
-	if err := json.Unmarshal(message.Message(), &newMessage); err != nil {
-		return err
+	newMessage := &Message{}
+	if alicloudMessage, ok := message.(*Message); ok {
+		newMessage = alicloudMessage
+	} else {
+		if err := json.Unmarshal(message.Message(), newMessage); err != nil {
+			return err
+		}
 	}
 	if len(newMessage.PhoneNumbers) == 0 {
 		return fmt.Errorf("phone numbers is empty")
@@ -76,7 +80,7 @@ func (a *alicloudSmsSender) Send(ctx context.Context, message message.Message) e
 	return a.batchSend(ctx, newMessage)
 }
 
-func (a *alicloudSmsSender) send(_ context.Context, message Message) error {
+func (a *alicloudSmsSender) send(_ context.Context, message *Message) error {
 	phoneNumber := message.PhoneNumbers[0]
 	sendSmsRequest := &dysmsapiv3.SendSmsRequest{
 		PhoneNumbers:  pointer.Of(phoneNumber),
@@ -97,7 +101,7 @@ func (a *alicloudSmsSender) send(_ context.Context, message Message) error {
 	return fmt.Errorf("send sms failed: %v", body)
 }
 
-func (a *alicloudSmsSender) batchSend(_ context.Context, message Message) error {
+func (a *alicloudSmsSender) batchSend(_ context.Context, message *Message) error {
 	phoneNumbers := message.PhoneNumbers
 	signNames := make([]string, 0, len(phoneNumbers))
 	templateParams := make([]string, 0, len(phoneNumbers))
