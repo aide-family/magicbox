@@ -12,8 +12,8 @@ type MetricConfig interface {
 	GetEndpoint() string
 	GetHeaders() http.Header
 	GetMethod() httpx.Method
-	GetBasicAuth() httpx.BasicAuth
-	GetTLS() *tls.Config
+	GetBasicAuth() *httpx.BasicAuth
+	GetTLS() *tls.ConnectionState
 	GetCA() string
 	GetScrapeInterval() time.Duration
 }

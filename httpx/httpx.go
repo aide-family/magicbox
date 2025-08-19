@@ -108,6 +108,9 @@ func WithBodyReader(body io.Reader) Option {
 
 func WithTLS(tlsConfig *tls.ConnectionState) Option {
 	return func(req *http.Request) {
+		if tlsConfig == nil {
+			return
+		}
 		req.TLS = tlsConfig
 	}
 }
