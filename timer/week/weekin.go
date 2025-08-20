@@ -1,7 +1,6 @@
 package week
 
 import (
-	"fmt"
 	"slices"
 	"time"
 
@@ -21,12 +20,6 @@ type weekIn struct {
 func NewWeekIn(weeks ...time.Weekday) (timer.Timer, error) {
 	weeks = slices.Compact(weeks)
 	slices.Sort(weeks)
-
-	for _, week := range weeks {
-		if week < time.Monday || week > time.Sunday {
-			return nil, fmt.Errorf("week must be between Monday and Sunday, but got %s", week)
-		}
-	}
 	return &weekIn{weeks: weeks}, nil
 }
 
