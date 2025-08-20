@@ -13,3 +13,11 @@ func Title(s ...string) string {
 	}
 	return cases.Title(language.English).String(strings.Join(s, " "))
 }
+
+func IsEmpty(s string) bool {
+	return s == "" || len(strings.TrimSpace(s)) == 0
+}
+
+func IsNotEmpty(s string) bool {
+	return s != "" && len(strings.TrimSpace(s)) > 0
+}
