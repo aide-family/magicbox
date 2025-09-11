@@ -19,3 +19,9 @@ errors:
            --go_out=paths=source_relative:./merr \
            --go-errors_out=paths=source_relative:./merr \
            ./merr/*.proto
+
+.PHONY: generate
+# generate stringer
+generate:
+	@echo "Generating stringer"
+	go generate ./...

@@ -106,7 +106,7 @@ func ErrorExist(format string, args ...interface{}) *errors.Error {
 }
 
 // REQUIRED Required
-//   - The requested resource is required.
+//   - The requested parameter is required.
 func IsRequired(err error) bool {
 	if err == nil {
 		return false
@@ -116,7 +116,7 @@ func IsRequired(err error) bool {
 }
 
 // REQUIRED Required
-//   - The requested resource is required.
+//   - The requested parameter is required.
 func ErrorRequired(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_REQUIRED.String(), fmt.Sprintf(format, args...))
 }

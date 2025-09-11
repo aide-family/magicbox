@@ -7,12 +7,11 @@
 package merr
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "github.com/go-kratos/kratos/v2/errors"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -48,7 +47,7 @@ const (
 	//   - The requested resource already error
 	ClientError_EXIST ClientError = 4
 	// REQUIRED Required
-	//   - The requested resource is required.
+	//   - The requested parameter is required.
 	ClientError_REQUIRED ClientError = 5
 	// CONFLICT Conflict
 	//   - The requested resource already exists.

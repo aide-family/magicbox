@@ -31,7 +31,7 @@ enum ClientError {
   //  - The requested resource already error
   EXIST = 4;
   // REQUIRED Required
-  //  - The requested resource is required.
+  //  - The requested parameter is required.
   REQUIRED = 5;
   // CONFLICT Conflict
   //  - The requested resource already exists.
