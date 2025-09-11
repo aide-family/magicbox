@@ -2,9 +2,8 @@
 package wechat
 
 import (
-	"encoding/json"
-
 	"github.com/aide-family/magicbox/message"
+	"github.com/aide-family/magicbox/serialize"
 )
 
 type MessageType string
@@ -28,7 +27,7 @@ func (m *Message) Message(channel message.MessageChannel) ([]byte, error) {
 	if err := MessageChannelWechat.Check(channel); err != nil {
 		return nil, err
 	}
-	jsonBytes, err := json.Marshal(m)
+	jsonBytes, err := serialize.JSONMarshal(m)
 	if err != nil {
 		return nil, err
 	}

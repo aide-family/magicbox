@@ -3,7 +3,6 @@ package alicloud
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/aide-family/magicbox/message"
 	"github.com/aide-family/magicbox/pointer"
+	"github.com/aide-family/magicbox/serialize"
 )
 
 var _ message.Driver = (*initializer)(nil)
@@ -71,7 +71,7 @@ func (a *alicloudSmsSender) Send(ctx context.Context, msg message.Message) error
 		if err != nil {
 			return err
 		}
-		if err := json.Unmarshal(jsonBytes, newMessage); err != nil {
+		if err := serialize.JSONUnmarshal(jsonBytes, newMessage); err != nil {
 			return err
 		}
 	}
@@ -115,15 +115,15 @@ func (a *alicloudSmsSender) batchSend(_ context.Context, message *Message) error
 		templateParams = append(templateParams, message.TemplateParam)
 	}
 
-	phoneNumberJson, err := json.Marshal(phoneNumbers)
+	phoneNumberJson, err := serialize.JSONMarshal(phoneNumbers)
 	if err != nil {
 		return fmt.Errorf("failed to marshal phone numbers: %v", err)
 	}
-	signNameJson, err := json.Marshal(signNames)
+	signNameJson, err := serialize.JSONMarshal(signNames)
 	if err != nil {
 		return fmt.Errorf("failed to marshal sign names: %v", err)
 	}
-	templateParamJson, err := json.Marshal(templateParams)
+	templateParamJson, err := serialize.JSONMarshal(templateParams)
 	if err != nil {
 		return fmt.Errorf("failed to marshal template params: %v", err)
 	}

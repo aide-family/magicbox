@@ -3,12 +3,12 @@ package email
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 
 	"gopkg.in/gomail.v2"
 
 	"github.com/aide-family/magicbox/message"
+	"github.com/aide-family/magicbox/serialize"
 )
 
 var _ message.Sender = (*emailSender)(nil)
@@ -42,7 +42,7 @@ func (e *emailSender) Send(ctx context.Context, m message.Message) error {
 		if err != nil {
 			return err
 		}
-		if err := json.Unmarshal(jsonBytes, emailMessage); err != nil {
+		if err := serialize.JSONUnmarshal(jsonBytes, emailMessage); err != nil {
 			return err
 		}
 	}

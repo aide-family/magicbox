@@ -1,10 +1,10 @@
 package email
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/aide-family/magicbox/message"
+	"github.com/aide-family/magicbox/serialize"
 )
 
 var _ message.Message = (*Message)(nil)
@@ -30,7 +30,7 @@ func (m *Message) Message(channel message.MessageChannel) ([]byte, error) {
 	if err := MessageChannelEmail.Check(channel); err != nil {
 		return nil, err
 	}
-	jsonBytes, err := json.Marshal(m)
+	jsonBytes, err := serialize.JSONMarshal(m)
 	if err != nil {
 		return nil, err
 	}

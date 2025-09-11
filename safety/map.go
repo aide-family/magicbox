@@ -3,9 +3,10 @@ package safety
 
 import (
 	"encoding"
-	"encoding/json"
 	"maps"
 	"sync"
+
+	"github.com/aide-family/magicbox/serialize"
 )
 
 var _ encoding.BinaryMarshaler = (*Map[string, any])(nil)
@@ -117,18 +118,18 @@ func (m *Map[K, V]) Map() map[K]V {
 func (m *Map[K, V]) UnmarshalBinary(data []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return json.Unmarshal(data, &m.m)
+	return serialize.JSONUnmarshal(data, &m.m)
 }
 
 func (m *Map[K, V]) MarshalBinary() (data []byte, err error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	return json.Marshal(m.m)
+	return serialize.JSONMarshal(m.m)
 }
 
 func (m *Map[K, V]) String() string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	bs, _ := json.Marshal(m.m)
+	bs, _ := serialize.JSONMarshal(m.m)
 	return string(bs)
 }

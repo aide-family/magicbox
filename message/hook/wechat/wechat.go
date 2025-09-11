@@ -3,12 +3,12 @@ package wechat
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 
 	"github.com/aide-family/magicbox/httpx"
 	"github.com/aide-family/magicbox/message"
 	"github.com/aide-family/magicbox/message/hook"
+	"github.com/aide-family/magicbox/serialize"
 )
 
 var _ message.Sender = (*wechatHookSender)(nil)
@@ -54,7 +54,7 @@ func (w *wechatHookSender) Send(ctx context.Context, msg message.Message) error 
 		if err != nil {
 			return err
 		}
-		if err := json.Unmarshal(jsonBytes, newMessage); err != nil {
+		if err := serialize.JSONUnmarshal(jsonBytes, newMessage); err != nil {
 			return err
 		}
 	}

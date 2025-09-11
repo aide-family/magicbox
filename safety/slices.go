@@ -2,9 +2,10 @@ package safety
 
 import (
 	"encoding"
-	"encoding/json"
 	"slices"
 	"sync"
+
+	"github.com/aide-family/magicbox/serialize"
 )
 
 var _ encoding.BinaryMarshaler = (*Slice[any])(nil)
@@ -107,18 +108,18 @@ func (s *Slice[T]) List() []T {
 func (s *Slice[T]) String() string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	bs, _ := json.Marshal(s.s)
+	bs, _ := serialize.JSONMarshal(s.s)
 	return string(bs)
 }
 
 func (s *Slice[T]) MarshalBinary() ([]byte, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	return json.Marshal(s.s)
+	return serialize.JSONMarshal(s.s)
 }
 
 func (s *Slice[T]) UnmarshalBinary(data []byte) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return json.Unmarshal(data, &s.s)
+	return serialize.JSONUnmarshal(data, &s.s)
 }

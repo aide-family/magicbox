@@ -3,18 +3,16 @@ package i18n
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path"
 	"strings"
 
+	"github.com/aide-family/magicbox/serialize"
 	"github.com/aide-family/magicbox/strutil/cnst"
 	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"github.com/pelletier/go-toml/v2"
-	yaml "sigs.k8s.io/yaml/goyaml.v2"
 )
 
 // New creates a new i18n bundle.
@@ -25,11 +23,11 @@ func New(config Config) (*i18n.Bundle, error) {
 
 	switch format {
 	case FormatJSON:
-		newBundle.RegisterUnmarshalFunc(format.String(), json.Unmarshal)
+		newBundle.RegisterUnmarshalFunc(format.String(), serialize.JSONUnmarshal)
 	case FormatYAML:
-		newBundle.RegisterUnmarshalFunc(format.String(), yaml.Unmarshal)
+		newBundle.RegisterUnmarshalFunc(format.String(), serialize.YAMLUnmarshal)
 	case FormatTOML:
-		newBundle.RegisterUnmarshalFunc(format.String(), toml.Unmarshal)
+		newBundle.RegisterUnmarshalFunc(format.String(), serialize.TOMLUnmarshal)
 	default:
 		return nil, fmt.Errorf("unsupported format: %s", format)
 	}

@@ -3,12 +3,12 @@ package feishu
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 
 	"github.com/aide-family/magicbox/httpx"
 	"github.com/aide-family/magicbox/message"
 	"github.com/aide-family/magicbox/message/hook"
+	"github.com/aide-family/magicbox/serialize"
 )
 
 var _ message.Sender = (*feishuHookSender)(nil)
@@ -50,7 +50,7 @@ func (f *feishuHookSender) Send(ctx context.Context, message message.Message) er
 		if err != nil {
 			return err
 		}
-		if err := json.Unmarshal(jsonBytes, feishuMessage); err != nil {
+		if err := serialize.JSONUnmarshal(jsonBytes, feishuMessage); err != nil {
 			return err
 		}
 	}
