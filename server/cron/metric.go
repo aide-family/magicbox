@@ -51,11 +51,9 @@ func (i *instrumentedCronJob) Run() {
 		cronJobLastRunTimestamp.WithLabelValues(jobName).Set(float64(time.Now().Unix()))
 	}()
 
-	// recover panic
 	defer func() {
 		if r := recover(); r != nil {
 			result = "failure"
-			panic(r)
 		}
 	}()
 

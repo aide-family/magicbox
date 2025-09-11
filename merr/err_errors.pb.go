@@ -11,6 +11,11 @@ import (
 // is compatible with the kratos package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
+// BAD_REQUEST Request Parameter Issues
+//   - Incorrect Request Format: The data format sent by the client does not meet the requirements of the API.
+//   - Invalid Parameter Values: The provided parameter values do not comply with business rules or format requirements.
+//   - Missing Necessary Parameters: The required parameters for the API are not provided.
+//   - Invalid Parameter Format: The provided parameter format is incorrect.
 func IsBadRequest(err error) bool {
 	if err == nil {
 		return false
@@ -19,10 +24,17 @@ func IsBadRequest(err error) bool {
 	return e.Reason == ClientError_BAD_REQUEST.String() && e.Code == 400
 }
 
+// BAD_REQUEST Request Parameter Issues
+//   - Incorrect Request Format: The data format sent by the client does not meet the requirements of the API.
+//   - Invalid Parameter Values: The provided parameter values do not comply with business rules or format requirements.
+//   - Missing Necessary Parameters: The required parameters for the API are not provided.
+//   - Invalid Parameter Format: The provided parameter format is incorrect.
 func ErrorBadRequest(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_BAD_REQUEST.String(), fmt.Sprintf(format, args...))
 }
 
+// NOT_FOUND Resource Not Found
+//   - The requested resource does not exist or is not available.
 func IsNotFound(err error) bool {
 	if err == nil {
 		return false
@@ -31,10 +43,16 @@ func IsNotFound(err error) bool {
 	return e.Reason == ClientError_NOT_FOUND.String() && e.Code == 400
 }
 
+// NOT_FOUND Resource Not Found
+//   - The requested resource does not exist or is not available.
 func ErrorNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
 
+// CAPTCHA Captcha Verification Failed
+//   - Incorrect Captcha: The provided captcha code is incorrect.
+//   - Captcha Expired: The captcha code has expired and cannot be used.
+//   - Captcha Not Provided: The captcha code is required but not provided.
 func IsCaptcha(err error) bool {
 	if err == nil {
 		return false
@@ -43,10 +61,17 @@ func IsCaptcha(err error) bool {
 	return e.Reason == ClientError_CAPTCHA.String() && e.Code == 400
 }
 
+// CAPTCHA Captcha Verification Failed
+//   - Incorrect Captcha: The provided captcha code is incorrect.
+//   - Captcha Expired: The captcha code has expired and cannot be used.
+//   - Captcha Not Provided: The captcha code is required but not provided.
 func ErrorCaptcha(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_CAPTCHA.String(), fmt.Sprintf(format, args...))
 }
 
+// PARAMS Invalid Parameters
+//   - Invalid Parameter Values: The provided parameter values do not comply with business rules or format requirements.
+//   - Missing Necessary Parameters: The required parameters for the API are not provided.
 func IsParams(err error) bool {
 	if err == nil {
 		return false
@@ -55,46 +80,16 @@ func IsParams(err error) bool {
 	return e.Reason == ClientError_PARAMS.String() && e.Code == 400
 }
 
+// PARAMS Invalid Parameters
+//   - Invalid Parameter Values: The provided parameter values do not comply with business rules or format requirements.
+//   - Missing Necessary Parameters: The required parameters for the API are not provided.
 func ErrorParams(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_PARAMS.String(), fmt.Sprintf(format, args...))
 }
 
-func IsPassword(err error) bool {
-	if err == nil {
-		return false
-	}
-	e := errors.FromError(err)
-	return e.Reason == ClientError_PASSWORD.String() && e.Code == 400
-}
-
-func ErrorPassword(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ClientError_PASSWORD.String(), fmt.Sprintf(format, args...))
-}
-
-func IsPermissionDenied(err error) bool {
-	if err == nil {
-		return false
-	}
-	e := errors.FromError(err)
-	return e.Reason == ClientError_PERMISSION_DENIED.String() && e.Code == 400
-}
-
-func ErrorPermissionDenied(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ClientError_PERMISSION_DENIED.String(), fmt.Sprintf(format, args...))
-}
-
-func IsMethodNotAllowed(err error) bool {
-	if err == nil {
-		return false
-	}
-	e := errors.FromError(err)
-	return e.Reason == ClientError_METHOD_NOT_ALLOWED.String() && e.Code == 400
-}
-
-func ErrorMethodNotAllowed(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ClientError_METHOD_NOT_ALLOWED.String(), fmt.Sprintf(format, args...))
-}
-
+// EXIST Resource Already Exists
+//   - The requested resource already exists.
+//   - The requested resource already error
 func IsExist(err error) bool {
 	if err == nil {
 		return false
@@ -103,22 +98,15 @@ func IsExist(err error) bool {
 	return e.Reason == ClientError_EXIST.String() && e.Code == 400
 }
 
+// EXIST Resource Already Exists
+//   - The requested resource already exists.
+//   - The requested resource already error
 func ErrorExist(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_EXIST.String(), fmt.Sprintf(format, args...))
 }
 
-func IsResourceNotOpen(err error) bool {
-	if err == nil {
-		return false
-	}
-	e := errors.FromError(err)
-	return e.Reason == ClientError_RESOURCE_NOT_OPEN.String() && e.Code == 400
-}
-
-func ErrorResourceNotOpen(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ClientError_RESOURCE_NOT_OPEN.String(), fmt.Sprintf(format, args...))
-}
-
+// REQUIRED Required
+//   - The requested resource is required.
 func IsRequired(err error) bool {
 	if err == nil {
 		return false
@@ -127,10 +115,15 @@ func IsRequired(err error) bool {
 	return e.Reason == ClientError_REQUIRED.String() && e.Code == 400
 }
 
+// REQUIRED Required
+//   - The requested resource is required.
 func ErrorRequired(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_REQUIRED.String(), fmt.Sprintf(format, args...))
 }
 
+// CONFLICT Conflict
+//   - The requested resource already exists.
+//   - The requested resource already error.
 func IsConflict(err error) bool {
 	if err == nil {
 		return false
@@ -139,10 +132,15 @@ func IsConflict(err error) bool {
 	return e.Reason == ClientError_CONFLICT.String() && e.Code == 400
 }
 
+// CONFLICT Conflict
+//   - The requested resource already exists.
+//   - The requested resource already error.
 func ErrorConflict(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ClientError_CONFLICT.String(), fmt.Sprintf(format, args...))
 }
 
+// UNAUTHORIZED Authentication Issues
+// - The user is not authenticated or does not have the required permissions to access the resource.
 func IsUnauthorized(err error) bool {
 	if err == nil {
 		return false
@@ -151,22 +149,30 @@ func IsUnauthorized(err error) bool {
 	return e.Reason == UnauthorizedError_UNAUTHORIZED.String() && e.Code == 401
 }
 
+// UNAUTHORIZED Authentication Issues
+// - The user is not authenticated or does not have the required permissions to access the resource.
 func ErrorUnauthorized(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, UnauthorizedError_UNAUTHORIZED.String(), fmt.Sprintf(format, args...))
 }
 
-func IsInvalidToken(err error) bool {
+// UNAUTHORIZED_INVALID_TOKEN Invalid Token
+//   - The provided authentication token is invalid or does not have the required permissions.
+func IsTokenInvalid(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == UnauthorizedError_INVALID_TOKEN.String() && e.Code == 401
+	return e.Reason == UnauthorizedError_TOKEN_INVALID.String() && e.Code == 401
 }
 
-func ErrorInvalidToken(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, UnauthorizedError_INVALID_TOKEN.String(), fmt.Sprintf(format, args...))
+// UNAUTHORIZED_INVALID_TOKEN Invalid Token
+//   - The provided authentication token is invalid or does not have the required permissions.
+func ErrorTokenInvalid(format string, args ...interface{}) *errors.Error {
+	return errors.New(401, UnauthorizedError_TOKEN_INVALID.String(), fmt.Sprintf(format, args...))
 }
 
+// TOKEN_EXPIRED Token Expired
+//   - The provided authentication token has expired.
 func IsTokenExpired(err error) bool {
 	if err == nil {
 		return false
@@ -175,10 +181,14 @@ func IsTokenExpired(err error) bool {
 	return e.Reason == UnauthorizedError_TOKEN_EXPIRED.String() && e.Code == 401
 }
 
+// TOKEN_EXPIRED Token Expired
+//   - The provided authentication token has expired.
 func ErrorTokenExpired(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, UnauthorizedError_TOKEN_EXPIRED.String(), fmt.Sprintf(format, args...))
 }
 
+// USER_FORBIDDEN User Forbidden
+//   - The user account is disabled and cannot access the resource.
 func IsUserForbidden(err error) bool {
 	if err == nil {
 		return false
@@ -187,10 +197,14 @@ func IsUserForbidden(err error) bool {
 	return e.Reason == UnauthorizedError_USER_FORBIDDEN.String() && e.Code == 401
 }
 
+// USER_FORBIDDEN User Forbidden
+//   - The user account is disabled and cannot access the resource.
 func ErrorUserForbidden(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, UnauthorizedError_USER_FORBIDDEN.String(), fmt.Sprintf(format, args...))
 }
 
+// USER_NOT_FOUND User Not Found
+//   - The requested user does not exist.
 func IsUserNotFound(err error) bool {
 	if err == nil {
 		return false
@@ -199,10 +213,83 @@ func IsUserNotFound(err error) bool {
 	return e.Reason == UnauthorizedError_USER_NOT_FOUND.String() && e.Code == 401
 }
 
+// USER_NOT_FOUND User Not Found
+//   - The requested user does not exist.
 func ErrorUserNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, UnauthorizedError_USER_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
 
+// ## Permission Denied
+// - The user does not have the necessary permissions to access the resource.
+func IsForbidden(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ForbiddenError_FORBIDDEN.String() && e.Code == 403
+}
+
+// ## Permission Denied
+// - The user does not have the necessary permissions to access the resource.
+func ErrorForbidden(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ForbiddenError_FORBIDDEN.String(), fmt.Sprintf(format, args...))
+}
+
+// ## Resource Not Open
+// - The requested resource is not open to the public.
+func IsResourceNotOpen(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ForbiddenError_RESOURCE_NOT_OPEN.String() && e.Code == 403
+}
+
+// ## Resource Not Open
+// - The requested resource is not open to the public.
+func ErrorResourceNotOpen(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ForbiddenError_RESOURCE_NOT_OPEN.String(), fmt.Sprintf(format, args...))
+}
+
+// ## Invalid Password
+// - The provided password is invalid.
+// - The user account is disabled and cannot access the resource.
+func IsPassword(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ForbiddenError_PASSWORD.String() && e.Code == 403
+}
+
+// ## Invalid Password
+// - The provided password is invalid.
+// - The user account is disabled and cannot access the resource.
+func ErrorPassword(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ForbiddenError_PASSWORD.String(), fmt.Sprintf(format, args...))
+}
+
+// ## Permission Denied
+// - The user does not have the necessary permissions to access the resource.
+// - The member account is disabled and cannot access the resource.
+func IsPermissionDenied(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ForbiddenError_PERMISSION_DENIED.String() && e.Code == 403
+}
+
+// ## Permission Denied
+// - The user does not have the necessary permissions to access the resource.
+// - The member account is disabled and cannot access the resource.
+func ErrorPermissionDenied(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ForbiddenError_PERMISSION_DENIED.String(), fmt.Sprintf(format, args...))
+}
+
+// ## Server Error
+// - The server encountered an unexpected error.
+// - The server is temporarily unavailable.
 func IsInternalServer(err error) bool {
 	if err == nil {
 		return false
@@ -211,10 +298,17 @@ func IsInternalServer(err error) bool {
 	return e.Reason == ServerError_INTERNAL_SERVER.String() && e.Code == 500
 }
 
+// ## Server Error
+// - The server encountered an unexpected error.
+// - The server is temporarily unavailable.
 func ErrorInternalServer(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ServerError_INTERNAL_SERVER.String(), fmt.Sprintf(format, args...))
 }
 
+// ## Invalid Argument
+// - The provided argument is invalid or does not meet the requirements.
+// - The provided argument is out of range.
+// - The provided argument is not supported.
 func IsInvalidArgument(err error) bool {
 	if err == nil {
 		return false
@@ -223,6 +317,10 @@ func IsInvalidArgument(err error) bool {
 	return e.Reason == ServerError_INVALID_ARGUMENT.String() && e.Code == 500
 }
 
+// ## Invalid Argument
+// - The provided argument is invalid or does not meet the requirements.
+// - The provided argument is out of range.
+// - The provided argument is not supported.
 func ErrorInvalidArgument(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ServerError_INVALID_ARGUMENT.String(), fmt.Sprintf(format, args...))
 }
