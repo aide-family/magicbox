@@ -13,6 +13,14 @@ var (
 	tomlEncoder   = toml.NewEncoder
 )
 
+func RegisterTOMLMarshal(f func(v any) ([]byte, error)) {
+	tomlMarshal = f
+}
+
+func RegisterTOMLUnmarshal(f func(data []byte, v any) error) {
+	tomlUnmarshal = f
+}
+
 func TOMLMarshal(v any) ([]byte, error) {
 	return tomlMarshal(v)
 }

@@ -14,6 +14,14 @@ var (
 	jsonEncoder   = json.NewEncoder
 )
 
+func RegisterJSONMarshal(f func(v any) ([]byte, error)) {
+	jsonMarshal = f
+}
+
+func RegisterJSONUnmarshal(f func(data []byte, v any) error) {
+	jsonUnmarshal = f
+}
+
 func JSONMarshal(v any) ([]byte, error) {
 	if pointer.IsNil(v) {
 		return nil, nil

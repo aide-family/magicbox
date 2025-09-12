@@ -13,6 +13,14 @@ var (
 	yamlEncoder   = yaml.NewEncoder
 )
 
+func RegisterYAMLMarshal(f func(v any) ([]byte, error)) {
+	yamlMarshal = f
+}
+
+func RegisterYAMLUnmarshal(f func(data []byte, v any) error) {
+	yamlUnmarshal = f
+}
+
 func YAMLMarshal(v any) ([]byte, error) {
 	return yamlMarshal(v)
 }

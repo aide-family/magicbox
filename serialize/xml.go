@@ -12,6 +12,14 @@ var (
 	xmlEncoder   = xml.NewEncoder
 )
 
+func RegisterXMLMarshal(f func(v any) ([]byte, error)) {
+	xmlMarshal = f
+}
+
+func RegisterXMLUnmarshal(f func(data []byte, v any) error) {
+	xmlUnmarshal = f
+}
+
 func XMLMarshal(v any) ([]byte, error) {
 	return xmlMarshal(v)
 }
