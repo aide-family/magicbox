@@ -4,6 +4,8 @@ package hello
 import (
 	"os"
 	"sync"
+
+	"github.com/aide-family/magicbox/strutil"
 )
 
 type env struct {
@@ -18,11 +20,14 @@ var (
 	once  sync.Once
 	id, _ = os.Hostname()
 	e     = &env{
-		name:     "Moon",
-		version:  "latest",
-		metadata: make(map[string]string),
-		env:      "dev",
-		id:       id,
+		name:    "Moon",
+		version: "latest",
+		metadata: map[string]string{
+			"author": "Aide Family",
+			"email":  "1058165620@qq.com",
+		},
+		env: "PREVIEW",
+		id:  id,
 	}
 )
 
@@ -30,31 +35,41 @@ type Option func(*env)
 
 func WithName(name string) Option {
 	return func(e *env) {
-		e.name = name
+		if strutil.IsNotEmpty(name) {
+			e.name = name
+		}
 	}
 }
 
 func WithVersion(version string) Option {
 	return func(e *env) {
-		e.version = version
+		if strutil.IsNotEmpty(version) {
+			e.version = version
+		}
 	}
 }
 
 func WithMetadata(metadata map[string]string) Option {
 	return func(e *env) {
-		e.metadata = metadata
+		if len(metadata) > 0 {
+			e.metadata = metadata
+		}
 	}
 }
 
 func WithEnv(envType string) Option {
 	return func(e *env) {
-		e.env = envType
+		if strutil.IsNotEmpty(envType) {
+			e.env = envType
+		}
 	}
 }
 
 func WithID(id string) Option {
 	return func(e *env) {
-		e.id = id
+		if strutil.IsNotEmpty(id) {
+			e.id = id
+		}
 	}
 }
 

@@ -9,12 +9,12 @@ const (
 	HTTHeaderXForwardedFor   = "X-Forwarded-For"
 	HTTHeaderXForwardedProto = "X-Forwarded-Proto"
 	HTTPHeaderAuth           = "Authorization"
-	HTTPHeaderXTeamID        = "X-Team-ID"
+	HTTPHeaderXNamespace     = "X-Namespace"
 	HTTPHeaderXUserID        = "X-User-ID"
 )
 
 const (
-	HTTPHeaderBearerPrefix    = "Bearer "
+	HTTPHeaderBearerPrefix    = "Bearer"
 	HTTPHeaderContextTypeJSON = "application/json; charset=utf-8"
 	HTTPHeaderContextTypeForm = "application/x-www-form-urlencoded"
 	HTTPHeaderContextTypeText = "text/plain; charset=utf-8"

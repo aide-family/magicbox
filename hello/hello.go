@@ -7,8 +7,7 @@ import (
 )
 
 const (
-	github = "https://github.com/aide-family/moon"
-	logo   = `
+	logo = `
 ┌───────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                       │
 │                        ███╗   ███╗ ██████╗  ██████╗ ███╗   ██╗                        │
@@ -53,7 +52,6 @@ func Hello() {
 		{"├── Version: ", Version()},
 		{"├── ID:      ", ID()},
 		{"├── Env:     ", Env()},
-		{"├── Github:  ", github},
 	}
 
 	for _, d := range details {

@@ -25,7 +25,7 @@ type initializer struct {
 func (i *initializer) New() (message.Sender, error) {
 	host, port := i.config.GetHost(), i.config.GetPort()
 	username, password := i.config.GetUsername(), i.config.GetPassword()
-	dialer := gomail.NewDialer(host, port, username, password)
+	dialer := gomail.NewDialer(host, int(port), username, password)
 	return &emailSender{dialer: dialer, config: i.config}, nil
 }
 
