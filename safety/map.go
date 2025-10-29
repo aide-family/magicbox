@@ -2,19 +2,46 @@
 package safety
 
 import (
+	"database/sql"
+	"database/sql/driver"
 	"encoding"
+	"fmt"
 	"maps"
 	"sync"
 
 	"github.com/aide-family/magicbox/serialize"
 )
 
-var _ encoding.BinaryMarshaler = (*Map[string, any])(nil)
-var _ encoding.BinaryUnmarshaler = (*Map[string, any])(nil)
+var (
+	_ encoding.BinaryMarshaler   = (*Map[string, any])(nil)
+	_ encoding.BinaryUnmarshaler = (*Map[string, any])(nil)
+	_ sql.Scanner                = (*Map[string, any])(nil)
+	_ driver.Valuer              = (*Map[string, any])(nil)
+)
 
 type Map[K comparable, V any] struct {
 	mu sync.RWMutex
 	m  map[K]V
+}
+
+// Value implements driver.Valuer.
+func (m *Map[K, V]) Value() (driver.Value, error) {
+	return serialize.JSONMarshal(m.m)
+}
+
+// Scan implements sql.Scanner.
+func (m *Map[K, V]) Scan(src any) error {
+	switch src := src.(type) {
+	case []byte:
+		return serialize.JSONUnmarshal(src, &m.m)
+	case string:
+		return serialize.JSONUnmarshal([]byte(src), &m.m)
+	case nil:
+		m.m = make(map[K]V)
+		return nil
+	default:
+		return fmt.Errorf("unsupported type: %T, expected []byte or string", src)
+	}
 }
 
 func NewMap[K comparable, V any](m map[K]V) *Map[K, V] {
