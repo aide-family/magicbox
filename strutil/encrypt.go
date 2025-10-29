@@ -53,7 +53,7 @@ func (e *EncryptString) Scan(src any) error {
 	default:
 		return fmt.Errorf("invalid type %T", src)
 	}
-	encrypted, err := encrypt.Encrypt(value)
+	encrypted, err := encrypt.Decrypt(value)
 	if err != nil {
 		return err
 	}
