@@ -2,6 +2,7 @@ package hello
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 )
@@ -52,6 +53,7 @@ func Hello() {
 		{"├── Version: ", Version()},
 		{"├── ID:      ", ID()},
 		{"├── Env:     ", Env()},
+		{"├── NodeID:  ", strconv.FormatInt(NodeID(), 10)},
 	}
 
 	for _, d := range details {

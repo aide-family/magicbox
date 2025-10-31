@@ -14,6 +14,7 @@ type env struct {
 	metadata map[string]string
 	id       string
 	env      string
+	nodeID   int64
 }
 
 var (
@@ -26,8 +27,9 @@ var (
 			"author": "Aide Family",
 			"email":  "1058165620@qq.com",
 		},
-		env: "PREVIEW",
-		id:  id,
+		env:    "PREVIEW",
+		id:     id,
+		nodeID: strutil.GetNodeIDFromIP(),
 	}
 )
 
@@ -73,6 +75,14 @@ func WithID(id string) Option {
 	}
 }
 
+func WithNodeID(nodeID int64) Option {
+	return func(e *env) {
+		if nodeID > 0 {
+			e.nodeID = nodeID
+		}
+	}
+}
+
 func SetEnvWithOption(opts ...Option) {
 	once.Do(func() {
 		for _, opt := range opts {
@@ -99,4 +109,8 @@ func Metadata() map[string]string {
 
 func ID() string {
 	return e.id
+}
+
+func NodeID() int64 {
+	return e.nodeID
 }
