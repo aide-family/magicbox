@@ -8,9 +8,8 @@ const (
 	HTTHeaderXRealIP         = "X-Real-IP"
 	HTTHeaderXForwardedFor   = "X-Forwarded-For"
 	HTTHeaderXForwardedProto = "X-Forwarded-Proto"
-	HTTPHeaderAuth           = "Authorization"
+	HTTPHeaderAuthorization  = "Authorization"
 	HTTPHeaderXNamespace     = "X-Namespace"
-	HTTPHeaderXUserID        = "X-User-ID"
 )
 
 const (

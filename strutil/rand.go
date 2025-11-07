@@ -22,3 +22,7 @@ func RandomStringWithCharset(length int, charset string) string {
 	}
 	return string(b)
 }
+
+func RandomID() string {
+	return RandomStringWithCharset(10, "abcdefghijklmnopqrstuvwxyz0123456789")
+}
