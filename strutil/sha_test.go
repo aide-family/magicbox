@@ -3,6 +3,7 @@ package strutil
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"testing"
 )
 
@@ -114,6 +115,6 @@ func BenchmarkSHA256(b *testing.B) {
 // ExampleSHA256 示例函数 - 展示如何使用SHA256函数
 func ExampleSHA256() {
 	result := SHA256("hello")
-	println(result) // 输出: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+	fmt.Println(result)
 	// Output: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
 }
