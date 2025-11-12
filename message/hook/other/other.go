@@ -15,12 +15,12 @@ var _ message.Driver = (*initializer)(nil)
 
 const MessageChannelOther message.MessageChannel = "webhook-other"
 
-func SenderDriver(config Config) message.Driver {
+func SenderDriver(config hook.Config) message.Driver {
 	return &initializer{config: config}
 }
 
 type initializer struct {
-	config Config
+	config hook.Config
 }
 
 // New implements message.Driver.
@@ -33,22 +33,17 @@ func (i *initializer) New() (message.Sender, error) {
 
 type otherHookSender struct {
 	cli    *httpx.Client
-	config Config
+	config hook.Config
 }
 
 // Send implements message.Sender.
 func (o *otherHookSender) Send(ctx context.Context, message message.Message) error {
-	opts := []httpx.Option{
-		httpx.WithHeaders(o.config.GetHeaders()),
-		httpx.WithBasicAuth(o.config.GetBasicAuth()),
-	}
-
 	jsonBytes, err := message.Message(MessageChannelOther)
 	if err != nil {
 		return err
 	}
 
-	resp, err := o.cli.Post(ctx, o.config.GetURL(), jsonBytes, opts...)
+	resp, err := o.cli.Post(ctx, o.config.GetURL(), jsonBytes)
 	if err != nil {
 		return err
 	}

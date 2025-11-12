@@ -1,4 +1,4 @@
-package wechat
+package hook
 
 type Config interface {
 	GetURL() string

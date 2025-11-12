@@ -16,12 +16,12 @@ var _ message.Driver = (*initializer)(nil)
 
 const MessageChannelWechat message.MessageChannel = "webhook-wechat"
 
-func SenderDriver(config Config) message.Driver {
+func SenderDriver(config hook.Config) message.Driver {
 	return &initializer{config: config}
 }
 
 type initializer struct {
-	config Config
+	config hook.Config
 }
 
 // New implements message.Driver.
@@ -34,7 +34,7 @@ func (i *initializer) New() (message.Sender, error) {
 
 type wechatHookSender struct {
 	cli    *httpx.Client
-	config Config
+	config hook.Config
 }
 
 // Send implements message.Sender.

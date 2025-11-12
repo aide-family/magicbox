@@ -11,15 +11,17 @@ import (
 	"github.com/aide-family/magicbox/serialize"
 )
 
-var _ message.Sender = (*feishuHookSender)(nil)
-var _ message.Driver = (*initializer)(nil)
+var (
+	_ message.Sender = (*feishuHookSender)(nil)
+	_ message.Driver = (*initializer)(nil)
+)
 
-func SenderDriver(config Config) message.Driver {
+func SenderDriver(config hook.Config) message.Driver {
 	return &initializer{config: config}
 }
 
 type initializer struct {
-	config Config
+	config hook.Config
 }
 
 // New implements message.Driver.
@@ -32,7 +34,7 @@ func (i *initializer) New() (message.Sender, error) {
 
 type feishuHookSender struct {
 	cli    *httpx.Client
-	config Config
+	config hook.Config
 }
 
 // Send implements message.Sender.
@@ -62,7 +64,7 @@ func (f *feishuHookSender) Send(ctx context.Context, message message.Message) er
 	if err != nil {
 		return err
 	}
-	u.Path += "/" + f.config.GetKey()
+
 	jsonBytes, err := feishuMessage.Message(MessageChannelFeishu)
 	if err != nil {
 		return err

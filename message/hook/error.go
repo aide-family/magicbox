@@ -16,5 +16,4 @@ func RequestAssert(resp *http.Response, unmarshalResponse func(body io.ReadClose
 		return err
 	}
 	return fmt.Errorf("status code: %d, body: %s", resp.StatusCode, string(body))
-
 }
