@@ -59,7 +59,7 @@ func (s *Slice[T]) AppendSlice(ss ...[]T) *Slice[T] {
 func (s *Slice[T]) Delete(i int) *Slice[T] {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.s = slices.Delete(s.s, i, 1)
+	s.s = slices.Delete(s.s, i, i+1)
 	return s
 }
 
