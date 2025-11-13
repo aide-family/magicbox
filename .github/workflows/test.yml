@@ -18,3 +18,6 @@ jobs:
 
       - name: test
         run: go test ./...
+
+      - name: test benchmark
+        run: go test -bench=. ./...
