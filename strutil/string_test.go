@@ -787,3 +787,332 @@ func BenchmarkIsNotEmpty_NonEmptyString(b *testing.B) {
 		_ = strutil.IsNotEmpty("hello")
 	}
 }
+
+// TestSplitSkipEmpty 测试 SplitSkipEmpty 函数
+func TestSplitSkipEmpty(t *testing.T) {
+	tests := []struct {
+		name     string
+		s        string
+		sep      string
+		expected []string
+	}{
+		{
+			name:     "Empty string",
+			s:        "",
+			sep:      ",",
+			expected: nil,
+		},
+		{
+			name:     "Simple split",
+			s:        "a,b,c",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Split with empty strings in middle",
+			s:        "a,,b,,c",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Split with empty string at start",
+			s:        ",a,b,c",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Split with empty string at end",
+			s:        "a,b,c,",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Split with empty strings at both ends",
+			s:        ",a,b,c,",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Only empty strings",
+			s:        ",,,",
+			sep:      ",",
+			expected: []string{},
+		},
+		{
+			name:     "Single character separator",
+			s:        "a|b|c",
+			sep:      "|",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Multi-character separator",
+			s:        "a||b||c",
+			sep:      "||",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Space separator",
+			s:        "a b c",
+			sep:      " ",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Space separator with multiple spaces",
+			s:        "a  b  c",
+			sep:      " ",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Tab separator",
+			s:        "a\tb\tc",
+			sep:      "\t",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Newline separator",
+			s:        "a\nb\nc",
+			sep:      "\n",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Single element",
+			s:        "a",
+			sep:      ",",
+			expected: []string{"a"},
+		},
+		{
+			name:     "No separator in string",
+			s:        "abc",
+			sep:      ",",
+			expected: []string{"abc"},
+		},
+		{
+			name:     "Separator not found",
+			s:        "a,b,c",
+			sep:      "|",
+			expected: []string{"a,b,c"},
+		},
+		{
+			name:     "Empty separator",
+			s:        "abc",
+			sep:      "",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "String with numbers",
+			s:        "1,2,3,4,5",
+			sep:      ",",
+			expected: []string{"1", "2", "3", "4", "5"},
+		},
+		{
+			name:     "String with special characters",
+			s:        "a!b!c",
+			sep:      "!",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "String with unicode characters",
+			s:        "你好,世界,测试",
+			sep:      ",",
+			expected: []string{"你好", "世界", "测试"},
+		},
+		{
+			name:     "String with mixed content and empty strings",
+			s:        "a,,b, ,c,,",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "Long string",
+			s:        "a,b,c,d,e,f,g,h,i,j",
+			sep:      ",",
+			expected: []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"},
+		},
+		{
+			name:     "String with only separator",
+			s:        ",",
+			sep:      ",",
+			expected: []string{},
+		},
+		{
+			name:     "String with multiple consecutive separators",
+			s:        "a,,,b,,,c",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "String with leading and trailing spaces in elements",
+			s:        " a , b , c ",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "String with spaces around separators",
+			s:        "a , b , c",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "String with tabs and spaces",
+			s:        "a\t,\tb\t,\tc",
+			sep:      ",",
+			expected: []string{"a", "b", "c"},
+		},
+		{
+			name:     "String with only whitespace segments",
+			s:        " ,  ,   ",
+			sep:      ",",
+			expected: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := strutil.SplitSkipEmpty(tt.s, tt.sep)
+			if !equalStringSlice(result, tt.expected) {
+				t.Errorf("SplitSkipEmpty(%q, %q) = %v, want %v", tt.s, tt.sep, result, tt.expected)
+			}
+		})
+	}
+}
+
+// equalStringSlice compares two string slices for equality
+func equalStringSlice(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// TestSplitSkipEmpty_EdgeCases 测试 SplitSkipEmpty 函数的边界情况
+func TestSplitSkipEmpty_EdgeCases(t *testing.T) {
+	tests := []struct {
+		name     string
+		s        string
+		sep      string
+		validate func([]string) bool
+	}{
+		{
+			name: "Very long string",
+			s:    strings.Repeat("a,", 1000) + "b",
+			sep:  ",",
+			validate: func(result []string) bool {
+				return len(result) == 1001 && result[0] == "a" && result[1000] == "b"
+			},
+		},
+		{
+			name: "String with whitespace-only segments",
+			s:    "a, ,b,  ,c",
+			sep:  ",",
+			validate: func(result []string) bool {
+				// Whitespace-only strings are trimmed and filtered out
+				return len(result) == 3 && result[0] == "a" && result[1] == "b" && result[2] == "c"
+			},
+		},
+		{
+			name: "String with tab and newline",
+			s:    "a\tb\nc",
+			sep:  "\t",
+			validate: func(result []string) bool {
+				return len(result) == 2 && result[0] == "a" && result[1] == "b\nc"
+			},
+		},
+		{
+			name: "Unicode separator",
+			s:    "a你好b你好c",
+			sep:  "你好",
+			validate: func(result []string) bool {
+				return len(result) == 3 && result[0] == "a" && result[1] == "b" && result[2] == "c"
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := strutil.SplitSkipEmpty(tt.s, tt.sep)
+			if !tt.validate(result) {
+				t.Errorf("SplitSkipEmpty(%q, %q) = %v, validation failed", tt.s, tt.sep, result)
+			}
+		})
+	}
+}
+
+// TestSplitSkipEmpty_Consistency 测试 SplitSkipEmpty 的一致性
+func TestSplitSkipEmpty_Consistency(t *testing.T) {
+	testCases := []struct {
+		s   string
+		sep string
+	}{
+		{"a,b,c", ","},
+		{"a,,b,,c", ","},
+		{"", ","},
+		{"a", ","},
+		{"a,b", ","},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.s, func(t *testing.T) {
+			// 多次调用应该返回相同结果
+			results := make([][]string, 10)
+			for i := 0; i < 10; i++ {
+				results[i] = strutil.SplitSkipEmpty(tc.s, tc.sep)
+			}
+
+			first := results[0]
+			for i, result := range results {
+				if !equalStringSlice(result, first) {
+					t.Errorf("SplitSkipEmpty(%q, %q) returned inconsistent value: result[0] = %v, result[%d] = %v", tc.s, tc.sep, first, i, result)
+				}
+			}
+		})
+	}
+}
+
+// BenchmarkSplitSkipEmpty 基准测试 SplitSkipEmpty 函数
+func BenchmarkSplitSkipEmpty(b *testing.B) {
+	testString := "a,b,c,d,e,f,g,h,i,j"
+	sep := ","
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = strutil.SplitSkipEmpty(testString, sep)
+	}
+}
+
+// BenchmarkSplitSkipEmpty_WithEmptyStrings 基准测试 SplitSkipEmpty 函数（包含空字符串）
+func BenchmarkSplitSkipEmpty_WithEmptyStrings(b *testing.B) {
+	testString := "a,,b,,c,,d,,e"
+	sep := ","
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = strutil.SplitSkipEmpty(testString, sep)
+	}
+}
+
+// BenchmarkSplitSkipEmpty_LongString 基准测试 SplitSkipEmpty 函数（长字符串）
+func BenchmarkSplitSkipEmpty_LongString(b *testing.B) {
+	testString := strings.Repeat("a,", 1000) + "b"
+	sep := ","
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = strutil.SplitSkipEmpty(testString, sep)
+	}
+}
+
+// BenchmarkSplitSkipEmpty_EmptyString 基准测试 SplitSkipEmpty 函数（空字符串）
+func BenchmarkSplitSkipEmpty_EmptyString(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = strutil.SplitSkipEmpty("", ",")
+	}
+}
