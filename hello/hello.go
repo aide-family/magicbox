@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 const (
@@ -38,8 +40,11 @@ func formatMetadataLine(prefix, key, value string) string {
 }
 
 // Hello print logo and system info
-func Hello() {
-	fmt.Println(Name() + " service starting...")
+func Hello(disableLogo ...bool) {
+	log.Debug(Name() + " service starting...")
+	if len(disableLogo) > 0 && disableLogo[0] {
+		return
+	}
 	fmt.Println(logo)
 
 	var detail strings.Builder

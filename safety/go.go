@@ -19,7 +19,7 @@ func Go(ctx context.Context, name string, f func(context.Context) error, logger 
 			if r := recover(); r != nil {
 				helper.Errorf("panic: %v", r)
 			}
-			helper.Infof("completed, cost: %v", time.Since(start))
+			helper.Debugw("completed, cost: %v", time.Since(start))
 		}()
 
 		if err := f(ctx); err != nil {
