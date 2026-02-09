@@ -1,3 +1,13 @@
+ifeq ($(GOHOSTOS), windows)
+	#the `find.exe` is different from `find` in bash/shell.
+	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
+	#changed to use git-bash.exe to run find cli or other cli friendly, caused of every developer has a Git.
+	Git_Bash=$(subst \,/,$(subst cmd\,bin\bash.exe,$(dir $(shell where git))))
+	PROTO_FILES=$(shell $(Git_Bash) -c "find proto/magicbox -name *.proto")
+else
+	PROTO_FILES=$(shell find proto/magicbox -name *.proto)
+endif
+
 .PHONY: init
 init:
 	@echo "Initializing magicbox environment"
@@ -10,18 +20,14 @@ init:
 	go install github.com/moon-monitor/stringer@latest
 	go install github.com/protoc-gen/i18n-gen@latest
 
+.PHONY: proto
+# generate proto
+proto:
+	protoc --proto_path=./proto/magicbox \
+           --proto_path=./proto/third_party \
+           --go_out=paths=source_relative:./ \
+           --go-grpc_out=paths=source_relative:./ \
+           --go-errors_out=paths=source_relative:./ \
+           --go-http_out=paths=source_relative:./ \
+           $(PROTO_FILES)
 
-.PHONY: errors
-# generate errors
-errors:
-	protoc --proto_path=./merr \
-           --proto_path=./third_party \
-           --go_out=paths=source_relative:./merr \
-           --go-errors_out=paths=source_relative:./merr \
-           ./merr/*.proto
-
-.PHONY: generate
-# generate stringer
-generate:
-	@echo "Generating stringer"
-	go generate ./...

@@ -2,9 +2,8 @@ package safety
 
 import (
 	"encoding"
+	"encoding/json"
 	"sync"
-
-	"github.com/aide-family/magicbox/serialize"
 )
 
 // SyncMap is a thread-safe map that wraps sync.Map.
@@ -124,7 +123,7 @@ func (m *SyncMap[K, V]) Map() map[K]V {
 
 func (m *SyncMap[K, V]) UnmarshalBinary(data []byte) error {
 	var newMap map[K]V
-	if err := serialize.JSONUnmarshal(data, &newMap); err != nil {
+	if err := json.Unmarshal(data, &newMap); err != nil {
 		return err
 	}
 	newSyncMap := &sync.Map{}
@@ -138,10 +137,10 @@ func (m *SyncMap[K, V]) UnmarshalBinary(data []byte) error {
 }
 
 func (m *SyncMap[K, V]) MarshalBinary() ([]byte, error) {
-	return serialize.JSONMarshal(m.Map())
+	return json.Marshal(m.Map())
 }
 
 func (m *SyncMap[K, V]) String() string {
-	bs, _ := serialize.JSONMarshal(m.Map())
+	bs, _ := json.Marshal(m.Map())
 	return string(bs)
 }

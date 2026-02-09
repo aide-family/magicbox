@@ -1,11 +1,11 @@
+// Package compress provides a gzip compression and decompression.
 package compress
 
 import (
 	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"io"
-
-	"github.com/aide-family/magicbox/serialize"
 )
 
 // Gzip compresses the data.
@@ -35,7 +35,7 @@ func GzipBytes(data []byte) ([]byte, error) {
 
 // GzipJSON compresses the JSON data.
 func GzipJSON(data any) (io.Reader, error) {
-	jsonData, err := serialize.JSONMarshal(data)
+	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
@@ -66,13 +66,13 @@ func UnGzipBytes(data []byte) ([]byte, error) {
 	return UnGzip(bytes.NewReader(data))
 }
 
-// UnGzipJSON decompresses the JSON data.
+// UnGzipJSONUnmarshal decompresses the JSON data.
 func UnGzipJSONUnmarshal(data io.Reader, v any) error {
 	uncompressed, err := UnGzip(data)
 	if err != nil {
 		return err
 	}
-	return serialize.JSONUnmarshal(uncompressed, v)
+	return json.Unmarshal(uncompressed, v)
 }
 
 // UnGzipJSONUnmarshalBytes decompresses the JSON data.

@@ -3,6 +3,7 @@ package prometheus
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/aide-family/magicbox/httpx"
 	"github.com/aide-family/magicbox/plugin/datasource"
-	"github.com/aide-family/magicbox/serialize"
 )
 
 type Client struct {
@@ -67,7 +67,7 @@ func (p *Client) QueryRange(ctx context.Context, query string, start, end time.T
 	}
 
 	var queryRangeResponse QueryRangeResponse
-	if err := serialize.JSONDecoder(resp.Body, &queryRangeResponse); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&queryRangeResponse); err != nil {
 		return nil, err
 	}
 
@@ -113,7 +113,7 @@ func (p *Client) Query(ctx context.Context, query string, time time.Time) (*Quer
 	}
 
 	var queryResponse QueryResponse
-	if err := serialize.JSONDecoder(resp.Body, &queryResponse); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&queryResponse); err != nil {
 		return nil, err
 	}
 
@@ -161,7 +161,7 @@ func (p *Client) Series(ctx context.Context, start, end time.Time, match []strin
 	}
 
 	var seriesResponse SeriesResponse
-	if err := serialize.JSONDecoder(resp.Body, &seriesResponse); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&seriesResponse); err != nil {
 		return nil, err
 	}
 
@@ -203,7 +203,7 @@ func (p *Client) Metadata(ctx context.Context, metric string) (*MetadataResponse
 	}
 
 	var metadataResponse MetadataResponse
-	if err := serialize.JSONDecoder(resp.Body, &metadataResponse); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&metadataResponse); err != nil {
 		return nil, err
 	}
 

@@ -1,9 +1,10 @@
 package middler
 
 import (
-	"net/http"
+	nethttp "net/http"
 	"strings"
 
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/handlers"
 )
 
@@ -28,7 +29,7 @@ func defaultAllowOriginFunc(c *CorsConfig) func(origin string) bool {
 }
 
 // Cors Cross-domain middleware
-func Cors(c *CorsConfig) func(http.Handler) http.Handler {
+func Cors(c *CorsConfig) func(nethttp.Handler) nethttp.Handler {
 	if c.AllowOriginFunc == nil {
 		c.AllowOriginFunc = defaultAllowOriginFunc(c)
 	}
@@ -41,4 +42,12 @@ func Cors(c *CorsConfig) func(http.Handler) http.Handler {
 		handlers.MaxAge(c.MaxAge),
 		handlers.AllowCredentials(),
 	)
+}
+
+func DefaultCors() http.ServerOption {
+	return http.Filter(Cors(&CorsConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{nethttp.MethodGet, nethttp.MethodPost, nethttp.MethodPut, nethttp.MethodDelete, nethttp.MethodOptions},
+		MaxAge:       600,
+	}))
 }

@@ -5,11 +5,10 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding"
+	"encoding/json"
 	"fmt"
 	"maps"
 	"sync"
-
-	"github.com/aide-family/magicbox/serialize"
 )
 
 var (
@@ -26,16 +25,16 @@ type Map[K comparable, V any] struct {
 
 // Value implements driver.Valuer.
 func (m *Map[K, V]) Value() (driver.Value, error) {
-	return serialize.JSONMarshal(m.m)
+	return json.Marshal(m.m)
 }
 
 // Scan implements sql.Scanner.
 func (m *Map[K, V]) Scan(src any) error {
 	switch src := src.(type) {
 	case []byte:
-		return serialize.JSONUnmarshal(src, &m.m)
+		return json.Unmarshal(src, &m.m)
 	case string:
-		return serialize.JSONUnmarshal([]byte(src), &m.m)
+		return json.Unmarshal([]byte(src), &m.m)
 	case nil:
 		m.m = make(map[K]V)
 		return nil
@@ -145,18 +144,18 @@ func (m *Map[K, V]) Map() map[K]V {
 func (m *Map[K, V]) UnmarshalBinary(data []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return serialize.JSONUnmarshal(data, &m.m)
+	return json.Unmarshal(data, &m.m)
 }
 
 func (m *Map[K, V]) MarshalBinary() (data []byte, err error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	return serialize.JSONMarshal(m.m)
+	return json.Marshal(m.m)
 }
 
 func (m *Map[K, V]) String() string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	bs, _ := serialize.JSONMarshal(m.m)
+	bs, _ := json.Marshal(m.m)
 	return string(bs)
 }
