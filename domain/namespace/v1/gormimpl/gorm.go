@@ -49,6 +49,21 @@ type gormRepository struct {
 	node       *snowflake.Node
 }
 
+func (g *gormRepository) GetNamespace(ctx context.Context, uid int64) (*namespacev1.NamespaceModel, error) {
+	namespace, err := query.Namespace.WithContext(ctx).Where(query.Namespace.UID.Eq(uid)).First()
+	if err != nil {
+		return nil, merr.ErrorInternalServer("get namespace failed: %v", err)
+	}
+	return &namespacev1.NamespaceModel{
+		UID:       namespace.UID.Int64(),
+		Name:      namespace.Name,
+		Metadata:  namespace.Metadata.Map(),
+		Status:    enum.GlobalStatus(namespace.Status),
+		CreatedAt: namespace.CreatedAt.Unix(),
+		UpdatedAt: namespace.UpdatedAt.Unix(),
+	}, nil
+}
+
 // SelectNamespace implements [namespacev1.Repository].
 func (g *gormRepository) SelectNamespace(ctx context.Context, req *namespacev1.SelectNamespaceRequest) (*namespacev1.SelectNamespaceResponse, error) {
 	mutation := query.Namespace
@@ -74,13 +89,16 @@ func (g *gormRepository) SelectNamespace(ctx context.Context, req *namespacev1.S
 		return nil, merr.ErrorInternalServer("select namespace failed: %v", err)
 	}
 	namespaces := make([]*namespacev1.SelectNamespaceItem, 0, len(queryNamespaces))
+	lastUID := int64(0)
 	for _, queryNamespace := range queryNamespaces {
-		namespaces = append(namespaces, ConvertNamespaceItemSelect(queryNamespace))
+		namespace := ConvertNamespaceItemSelect(queryNamespace)
+		namespaces = append(namespaces, namespace)
+		lastUID = namespace.Value
 	}
 	return &namespacev1.SelectNamespaceResponse{
 		Items:   namespaces,
 		Total:   total,
-		LastUID: queryNamespaces[len(queryNamespaces)-1].UID.Int64(),
+		LastUID: lastUID,
 		HasMore: len(queryNamespaces) == int(req.Limit),
 	}, nil
 }

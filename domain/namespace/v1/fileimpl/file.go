@@ -181,6 +181,24 @@ func (f *fileRepository) watch() {
 	}()
 }
 
+func (f *fileRepository) GetNamespace(ctx context.Context, uid int64) (*namespacev1.NamespaceModel, error) {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+	for _, namespace := range f.namespaces {
+		if namespace.UID == uid {
+			return &namespacev1.NamespaceModel{
+				UID:       namespace.UID,
+				Name:      namespace.Name,
+				Metadata:  namespace.Metadata,
+				Status:    namespace.Status,
+				CreatedAt: namespace.CreatedAt,
+				UpdatedAt: namespace.UpdatedAt,
+			}, nil
+		}
+	}
+	return nil, merr.ErrorNotFound("namespace not found")
+}
+
 // SelectNamespace implements [namespacev1.Repository].
 func (f *fileRepository) SelectNamespace(ctx context.Context, req *namespacev1.SelectNamespaceRequest) (*namespacev1.SelectNamespaceResponse, error) {
 	f.mu.RLock()
@@ -193,6 +211,7 @@ func (f *fileRepository) SelectNamespace(ctx context.Context, req *namespacev1.S
 	lessFunc := func(i, j int64) bool {
 		return i > j
 	}
+	lastUID := int64(0)
 	for _, namespace := range f.namespaces {
 		if req.Status > enum.GlobalStatus_GlobalStatus_UNKNOWN && namespace.Status != req.Status {
 			continue
@@ -204,6 +223,7 @@ func (f *fileRepository) SelectNamespace(ctx context.Context, req *namespacev1.S
 			continue
 		}
 		count++
+		lastUID = namespace.UID
 		namespaces = append(namespaces, convertNamespaceItemSelect(namespace))
 		if count >= int(req.Limit) {
 			break
@@ -213,7 +233,7 @@ func (f *fileRepository) SelectNamespace(ctx context.Context, req *namespacev1.S
 	return &namespacev1.SelectNamespaceResponse{
 		Items:   namespaces[:req.Limit],
 		Total:   int64(len(namespaces)),
-		LastUID: namespaces[len(namespaces)-1].Value,
+		LastUID: lastUID,
 		HasMore: count == int(req.Limit),
 	}, nil
 }

@@ -10,6 +10,16 @@ import (
 type (
 	Repository interface {
 		SelectNamespace(ctx context.Context, req *SelectNamespaceRequest) (*SelectNamespaceResponse, error)
+		GetNamespace(ctx context.Context, uid int64) (*NamespaceModel, error)
+	}
+
+	NamespaceModel struct {
+		UID       int64             `json:"uid"`
+		Name      string            `json:"name"`
+		Metadata  map[string]string `json:"metadata"`
+		Status    enum.GlobalStatus `json:"status"`
+		CreatedAt int64             `json:"created_at"`
+		UpdatedAt int64             `json:"updated_at"`
 	}
 
 	SelectNamespaceRequest struct {
