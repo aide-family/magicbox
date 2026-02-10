@@ -25,11 +25,11 @@ init:
 proto:
 	git submodule update --init --recursive
 	git submodule update --remote --recursive
-	protoc --proto_path=./proto/magicbox \
+	protoc --proto_path=./proto \
            --proto_path=./proto/third_party \
-           --go_out=paths=source_relative:./ \
-           --go-grpc_out=paths=source_relative:./ \
-           --go-errors_out=paths=source_relative:./ \
-           --go-http_out=paths=source_relative:./ \
+           --go_out=. --go_opt=module=github.com/aide-family/magicbox \
+           --go-grpc_out=. --go-grpc_opt=module=github.com/aide-family/magicbox \
+           --go-errors_out=. --go-errors_opt=module=github.com/aide-family/magicbox \
+           --go-http_out=. --go-http_opt=module=github.com/aide-family/magicbox \
            $(PROTO_FILES)
 
