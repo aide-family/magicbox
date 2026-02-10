@@ -23,6 +23,8 @@ init:
 .PHONY: proto
 # generate proto
 proto:
+	git submodule update --init --recursive
+	git submodule update --remote --recursive
 	protoc --proto_path=./proto/magicbox \
            --proto_path=./proto/third_party \
            --go_out=paths=source_relative:./ \
