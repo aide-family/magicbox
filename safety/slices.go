@@ -97,14 +97,20 @@ func (s *Slice[T]) Clone() *Slice[T] {
 	return NewSlice(slices.Clone(s.s))
 }
 
-func (s *Slice[T]) Uniq(f func(a, b T) bool) *Slice[T] {
+func (s *Slice[T]) Uniq(equal func(a, b T) bool) *Slice[T] {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.s = slices.CompactFunc(s.s, func(a, b T) bool {
+		return equal(a, b)
+	})
+	return s
+}
+
+func (s *Slice[T]) Sort(less func(a, b T) bool) *Slice[T] {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	sort.Slice(s.s, func(i, j int) bool {
-		return f(s.s[i], s.s[j])
-	})
-	s.s = slices.CompactFunc(s.s, func(a, b T) bool {
-		return f(a, b)
+		return less(s.s[i], s.s[j])
 	})
 	return s
 }
