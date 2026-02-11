@@ -75,7 +75,7 @@ message StrategyMetricLevelItem {
 	marksman.api.v1.LevelItem level = 3;
 	magicbox.enum.SampleMode mode = 4;
 	magicbox.enum.ConditionMetric condition = 5;
-	repeated int64 values = 6;
+	repeated double values = 6;
 	google.protobuf.Duration duration = 7;
 	magicbox.enum.GlobalStatus status = 8;
 }
@@ -121,7 +121,7 @@ message SaveStrategyMetricLevelRequest {
 		expression: "this in [magicbox.enum.ConditionMetric.CONDITION_METRIC_EQ, magicbox.enum.ConditionMetric.CONDITION_METRIC_NE, magicbox.enum.ConditionMetric.CONDITION_METRIC_GT, magicbox.enum.ConditionMetric.CONDITION_METRIC_GTE, magicbox.enum.ConditionMetric.CONDITION_METRIC_LT, magicbox.enum.ConditionMetric.CONDITION_METRIC_LTE, magicbox.enum.ConditionMetric.CONDITION_METRIC_IN, magicbox.enum.ConditionMetric.CONDITION_METRIC_NOT_IN]",
 		message: "condition must be in ['CONDITION_METRIC_EQ', 'CONDITION_METRIC_NE', 'CONDITION_METRIC_GT', 'CONDITION_METRIC_GTE', 'CONDITION_METRIC_LT', 'CONDITION_METRIC_LTE', 'CONDITION_METRIC_IN', 'CONDITION_METRIC_NOT_IN']",
 	}];
-	repeated int64 values = 5 [(buf.validate.field).required = true, (buf.validate.field).cel = {
+	repeated double values = 5 [(buf.validate.field).required = true, (buf.validate.field).cel = {
 		expression: "this.size() == 1 || this.size() == 2",
 		message: "values must be 1 or 2",
 	}];
