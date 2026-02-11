@@ -164,3 +164,11 @@ func (s *Slice[T]) Scan(src any) error {
 		return fmt.Errorf("unsupported type: %T, expected []byte or string", src)
 	}
 }
+
+func ConvertSlice[T any, R any](s []T, convert func(v T) R) []R {
+	rs := make([]R, 0, len(s))
+	for _, v := range s {
+		rs = append(rs, convert(v))
+	}
+	return rs
+}
