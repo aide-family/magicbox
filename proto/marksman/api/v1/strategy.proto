@@ -91,7 +91,7 @@ service Strategy {
 }
 
 message StrategyGroupItem {
-	string uid = 1;
+	int64 uid = 1;
 	string name = 2;
 	string remark = 3;
 	magicbox.enum.GlobalStatus status = 4;
@@ -101,7 +101,7 @@ message StrategyGroupItem {
 }
 
 message StrategyItem {
-	string uid = 1;
+	int64 uid = 1;
 	string name = 2;
 	string remark = 3;
 	magicbox.enum.DatasourceType type = 4;
@@ -137,7 +137,7 @@ message CreateStrategyGroupRequest {
 message CreateStrategyGroupReply {}
 
 message UpdateStrategyGroupRequest {
-	string uid = 1 [(buf.validate.field).required = true, (buf.validate.field).cel = {
+	int64 uid = 1 [(buf.validate.field).required = true, (buf.validate.field).cel = {
 		expression: "this > 0",
 		message: "uid must be greater than 0",
 	}];
@@ -160,12 +160,12 @@ message UpdateStrategyGroupStatusRequest {
 message UpdateStrategyGroupStatusReply {}
 
 message DeleteStrategyGroupRequest {
-	string uid = 1 [(buf.validate.field).required = true];
+	int64 uid = 1 [(buf.validate.field).required = true];
 }
 message DeleteStrategyGroupReply {}
 
 message GetStrategyGroupRequest {
-	string uid = 1 [(buf.validate.field).required = true];
+	int64 uid = 1 [(buf.validate.field).required = true];
 }
 
 message ListStrategyGroupRequest {
@@ -250,7 +250,7 @@ message CreateStrategyRequest {
 message CreateStrategyReply {}
 
 message UpdateStrategyRequest {
-	string uid = 1 [(buf.validate.field).required = true, (buf.validate.field).cel = {
+	int64 uid = 1 [(buf.validate.field).required = true, (buf.validate.field).cel = {
 		expression: "this > 0",
 		message: "uid must be greater than 0",
 	}];
@@ -278,7 +278,7 @@ message UpdateStrategyRequest {
 message UpdateStrategyReply {}
 
 message UpdateStrategyStatusRequest {
-	string uid = 1 [(buf.validate.field).required = true];
+	int64 uid = 1 [(buf.validate.field).required = true];
 	magicbox.enum.GlobalStatus status = 2 [(buf.validate.field).required = true, (buf.validate.field).cel = {
 		expression: "this in [magicbox.enum.GlobalStatus.ENABLED, magicbox.enum.GlobalStatus.DISABLED]",
 		message: "status must be in ['ENABLED', 'DISABLED']",
@@ -287,12 +287,12 @@ message UpdateStrategyStatusRequest {
 message UpdateStrategyStatusReply {}
 
 message DeleteStrategyRequest {
-	string uid = 1 [(buf.validate.field).required = true];
+	int64 uid = 1 [(buf.validate.field).required = true];
 }
 message DeleteStrategyReply {}
 
 message GetStrategyRequest {
-	string uid = 1 [(buf.validate.field).required = true];
+	int64 uid = 1 [(buf.validate.field).required = true];
 }
 
 message ListStrategyRequest {
@@ -309,7 +309,7 @@ message ListStrategyRequest {
 		message: "pageSize must be greater than or equal to 1 and less than or equal to 200",
 	}];
 	magicbox.enum.GlobalStatus status = 4;
-	string strategyGroupUID = 5;
+	int64 strategyGroupUID = 5;
 	magicbox.enum.DatasourceType type = 6;
 	magicbox.enum.DatasourceDriver driver = 7;
 }

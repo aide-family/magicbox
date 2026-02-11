@@ -41,7 +41,7 @@ service Datasource {
 }
 
 message DatasourceItem {
-	string uid = 1;
+	int64 uid = 1;
 	string name = 2;
 	magicbox.enum.DatasourceType type = 3;
 	magicbox.enum.DatasourceDriver driver = 4;
@@ -69,7 +69,7 @@ message CreateDatasourceRequest {
 message CreateDatasourceReply {}
 
 message UpdateDatasourceRequest {
-	string uid = 1 [(buf.validate.field).required = true, (buf.validate.field).cel = {
+	int64 uid = 1 [(buf.validate.field).required = true, (buf.validate.field).cel = {
 		expression: "this > 0",
 		message: "uid must be greater than 0",
 	}];
@@ -90,12 +90,12 @@ message UpdateDatasourceRequest {
 message UpdateDatasourceReply {}
 
 message DeleteDatasourceRequest {
-	string uid = 1 [(buf.validate.field).required = true];
+	int64 uid = 1 [(buf.validate.field).required = true];
 }
 message DeleteDatasourceReply {}
 
 message GetDatasourceRequest {
-	string uid = 1 [(buf.validate.field).required = true];
+	int64 uid = 1 [(buf.validate.field).required = true];
 }
 
 message ListDatasourceRequest {

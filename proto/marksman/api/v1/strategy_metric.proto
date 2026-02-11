@@ -63,7 +63,7 @@ message StrategyMetricItem {
 	string summary = 4;
 	string description = 5;
 	magicbox.enum.GlobalStatus status = 6;
-	repeated string datasources = 7;
+	repeated int64 datasourceUIDs = 7;
 	repeated StrategyMetricLevelItem levels = 8;
 	string createdAt = 9;
 	string updatedAt = 10;
