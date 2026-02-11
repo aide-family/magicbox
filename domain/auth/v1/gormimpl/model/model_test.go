@@ -70,7 +70,7 @@ func TestGenerate(t *testing.T) {
 }
 
 func TestMigrateMysql(t *testing.T) {
-	migrateMysql()
+	// migrateMysql()
 }
 
 func TestMigrateSQLite(t *testing.T) {

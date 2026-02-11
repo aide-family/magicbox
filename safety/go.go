@@ -5,12 +5,10 @@ import (
 	"time"
 
 	klog "github.com/go-kratos/kratos/v2/log"
-
-	"github.com/aide-family/magicbox/log"
 )
 
-func Go(ctx context.Context, name string, f func(context.Context) error, logger log.Interface) {
-	helper := klog.NewHelper(klog.With(logger, "func", name))
+func Go(ctx context.Context, name string, f func(context.Context) error) {
+	helper := klog.NewHelper(klog.With(klog.GetLogger(), "func", name))
 
 	start := time.Now()
 

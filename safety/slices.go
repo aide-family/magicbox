@@ -1,14 +1,19 @@
 package safety
 
 import (
+	"database/sql"
+	"database/sql/driver"
 	"encoding"
 	"encoding/json"
+	"fmt"
 	"slices"
 	"sync"
 )
 
 var _ encoding.BinaryMarshaler = (*Slice[any])(nil)
 var _ encoding.BinaryUnmarshaler = (*Slice[any])(nil)
+var _ sql.Scanner = (*Slice[any])(nil)
+var _ driver.Valuer = (*Slice[any])(nil)
 
 type Slice[T any] struct {
 	mu sync.RWMutex
@@ -121,4 +126,22 @@ func (s *Slice[T]) UnmarshalBinary(data []byte) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return json.Unmarshal(data, &s.s)
+}
+
+func (s *Slice[T]) Value() (driver.Value, error) {
+	return json.Marshal(s.s)
+}
+
+func (s *Slice[T]) Scan(src any) error {
+	switch src := src.(type) {
+	case []byte:
+		return json.Unmarshal(src, &s.s)
+	case string:
+		return json.Unmarshal([]byte(src), &s.s)
+	case nil:
+		s.s = nil
+		return nil
+	default:
+		return fmt.Errorf("unsupported type: %T, expected []byte or string", src)
+	}
 }

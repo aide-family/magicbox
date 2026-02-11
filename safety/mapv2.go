@@ -1,8 +1,11 @@
 package safety
 
 import (
+	"database/sql"
+	"database/sql/driver"
 	"encoding"
 	"encoding/json"
+	"fmt"
 	"sync"
 )
 
@@ -16,6 +19,8 @@ type SyncMap[K comparable, V any] struct {
 
 var _ encoding.BinaryMarshaler = (*SyncMap[string, any])(nil)
 var _ encoding.BinaryUnmarshaler = (*SyncMap[string, any])(nil)
+var _ sql.Scanner = (*SyncMap[string, any])(nil)
+var _ driver.Valuer = (*SyncMap[string, any])(nil)
 
 func NewSyncMap[K comparable, V any](m map[K]V) *SyncMap[K, V] {
 	sm := &sync.Map{}
@@ -143,4 +148,38 @@ func (m *SyncMap[K, V]) MarshalBinary() ([]byte, error) {
 func (m *SyncMap[K, V]) String() string {
 	bs, _ := json.Marshal(m.Map())
 	return string(bs)
+}
+
+func (m *SyncMap[K, V]) Value() (driver.Value, error) {
+	return json.Marshal(m.Map())
+}
+
+func (m *SyncMap[K, V]) Scan(src any) error {
+	switch src := src.(type) {
+	case []byte:
+		newMap := m.Map()
+		if err := json.Unmarshal(src, &newMap); err != nil {
+			return err
+		}
+		m.m = &sync.Map{}
+		for k, v := range newMap {
+			m.m.Store(k, v)
+		}
+		return nil
+	case string:
+		newMap := m.Map()
+		if err := json.Unmarshal([]byte(src), &newMap); err != nil {
+			return err
+		}
+		m.m = &sync.Map{}
+		for k, v := range newMap {
+			m.m.Store(k, v)
+		}
+		return nil
+	case nil:
+		m.m = &sync.Map{}
+		return nil
+	default:
+		return fmt.Errorf("unsupported type: %T, expected []byte or string", src)
+	}
 }

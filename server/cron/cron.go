@@ -1,4 +1,4 @@
-// Package server provides a cron job to fetch metrics from Prometheus.
+// Package cron provides a cron job server.
 package cron
 
 import (
@@ -34,7 +34,7 @@ func WithCronJobs(jobs ...CronJob) Option {
 				safety.Go(context.Background(), fmt.Sprintf("cron-job-immediate-%s", wrappedJob.Index()), func(ctx context.Context) error {
 					wrappedJob.Run()
 					return nil
-				}, c.helper.Logger())
+				})
 			}
 		}
 	}
@@ -48,7 +48,7 @@ func WithCronJobChannel(ch <-chan CronJob) Option {
 				WithCronJobs(job)(c)
 			}
 			return nil
-		}, c.helper.Logger())
+		})
 	}
 }
 
@@ -66,7 +66,7 @@ func WithRemoveJobChannel(ch <-chan string) Option {
 				}
 			}
 			return nil
-		}, c.helper.Logger())
+		})
 	}
 }
 
