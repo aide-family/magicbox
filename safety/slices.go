@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"sort"
 	"sync"
 )
 
@@ -94,6 +95,18 @@ func (s *Slice[T]) Clone() *Slice[T] {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return NewSlice(slices.Clone(s.s))
+}
+
+func (s *Slice[T]) Uniq(f func(a, b T) bool) *Slice[T] {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	sort.Slice(s.s, func(i, j int) bool {
+		return f(s.s[i], s.s[j])
+	})
+	s.s = slices.CompactFunc(s.s, func(a, b T) bool {
+		return f(a, b)
+	})
+	return s
 }
 
 func (s *Slice[T]) Clear() *Slice[T] {
