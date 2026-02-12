@@ -29,6 +29,7 @@ type Namespace struct {
 	Name      string                      `gorm:"column:name;type:varchar(100);not null;uniqueIndex:idx__namespace__name__deleted_at"`
 	Metadata  *safety.Map[string, string] `gorm:"column:metadata;type:json;"`
 	Status    enum.GlobalStatus           `gorm:"column:status;type:int;not null;default:0"`
+	Remark    string                      `gorm:"column:remark;type:varchar(1000);not null;default:''"`
 }
 
 func (Namespace) TableName() string {

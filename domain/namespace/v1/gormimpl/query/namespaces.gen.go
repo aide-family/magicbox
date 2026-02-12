@@ -36,6 +36,7 @@ func newNamespace(db *gorm.DB, opts ...gen.DOOption) namespace {
 	_namespace.Name = field.NewString(tableName, "name")
 	_namespace.Metadata = field.NewField(tableName, "metadata")
 	_namespace.Status = field.NewInt32(tableName, "status")
+	_namespace.Remark = field.NewString(tableName, "remark")
 
 	_namespace.fillFieldMap()
 
@@ -55,6 +56,7 @@ type namespace struct {
 	Name      field.String
 	Metadata  field.Field
 	Status    field.Int32
+	Remark    field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -80,6 +82,7 @@ func (n *namespace) updateTableName(table string) *namespace {
 	n.Name = field.NewString(table, "name")
 	n.Metadata = field.NewField(table, "metadata")
 	n.Status = field.NewInt32(table, "status")
+	n.Remark = field.NewString(table, "remark")
 
 	n.fillFieldMap()
 
@@ -96,7 +99,7 @@ func (n *namespace) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (n *namespace) fillFieldMap() {
-	n.fieldMap = make(map[string]field.Expr, 9)
+	n.fieldMap = make(map[string]field.Expr, 10)
 	n.fieldMap["id"] = n.ID
 	n.fieldMap["uid"] = n.UID
 	n.fieldMap["created_at"] = n.CreatedAt
@@ -106,6 +109,7 @@ func (n *namespace) fillFieldMap() {
 	n.fieldMap["name"] = n.Name
 	n.fieldMap["metadata"] = n.Metadata
 	n.fieldMap["status"] = n.Status
+	n.fieldMap["remark"] = n.Remark
 }
 
 func (n namespace) clone(db *gorm.DB) namespace {

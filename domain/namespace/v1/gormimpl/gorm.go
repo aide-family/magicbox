@@ -61,6 +61,7 @@ func (g *gormRepository) CreateNamespace(ctx context.Context, req *apiv1.CreateN
 		Name:     req.Name,
 		Metadata: safety.NewMap(req.Metadata),
 		Status:   enum.GlobalStatus_ENABLED,
+		Remark:   req.Remark,
 	}
 	namespace.WithCreator(contextx.GetUserUID(ctx))
 	if err := query.Namespace.WithContext(ctx).Create(namespace); err != nil {
@@ -121,6 +122,7 @@ func (g *gormRepository) UpdateNamespace(ctx context.Context, req *apiv1.UpdateN
 	columns := []field.AssignExpr{
 		namespaceMutation.Name.Value(req.Name),
 		namespaceMutation.Metadata.Value(safety.NewMap(req.Metadata)),
+		namespaceMutation.Remark.Value(req.Remark),
 	}
 	_, err := namespaceMutation.WithContext(ctx).Where(namespaceMutation.UID.Eq(req.Uid)).UpdateColumnSimple(columns...)
 	if err != nil {
@@ -144,14 +146,7 @@ func (g *gormRepository) GetNamespace(ctx context.Context, req *apiv1.GetNamespa
 	if err != nil {
 		return nil, merr.ErrorInternalServer("get namespace failed: %v", err)
 	}
-	return &apiv1.NamespaceItem{
-		Uid:       namespace.UID.Int64(),
-		Name:      namespace.Name,
-		Metadata:  namespace.Metadata.Map(),
-		Status:    enum.GlobalStatus(namespace.Status),
-		CreatedAt: namespace.CreatedAt.String(),
-		UpdatedAt: namespace.UpdatedAt.String(),
-	}, nil
+	return ConvertNamespaceItem(namespace), nil
 }
 
 // SelectNamespace implements [namespacev1.Repository].
@@ -173,7 +168,7 @@ func (g *gormRepository) SelectNamespace(ctx context.Context, req *apiv1.SelectN
 		wrappers = wrappers.Where(mutation.UID.Lt(req.LastUID))
 	}
 	wrappers = wrappers.Limit(int(req.Limit))
-	wrappers = wrappers.Select(mutation.UID, mutation.Name, mutation.Status, mutation.DeletedAt)
+	wrappers = wrappers.Select(mutation.UID, mutation.Name, mutation.Status, mutation.DeletedAt, mutation.Remark)
 	queryNamespaces, err := wrappers.Find()
 	if err != nil {
 		return nil, merr.ErrorInternalServer("select namespace failed: %v", err)
