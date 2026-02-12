@@ -95,7 +95,9 @@ message CreateTemplateRequest {
 	// }
 	string jsonData = 3 [(buf.validate.field).required = true];
 }
-message CreateTemplateReply {}
+message CreateTemplateReply {
+	int64 uid = 1;
+}
 
 message UpdateTemplateRequest {
 	int64 uid = 1 [(buf.validate.field).required = true];

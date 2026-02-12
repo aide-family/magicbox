@@ -44,8 +44,7 @@ service Sender {
 }
 
 message SendReply {
-	int32 code = 1;
-	string message = 2;
+	int64 uid = 1;
 }
 
 message SendMessageRequest {

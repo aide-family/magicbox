@@ -84,7 +84,9 @@ message CreateWebhookRequest {
 	map<string, string> headers = 5;
 	string secret = 6;
 }
-message CreateWebhookReply {}
+message CreateWebhookReply {
+	int64 uid = 1;
+}
 
 message UpdateWebhookRequest {
 	int64 uid = 1 [(buf.validate.field).required = true];

@@ -70,7 +70,9 @@ message CreateEmailConfigRequest {
 	string username = 4 [(buf.validate.field).required = true];
 	string password = 5 [(buf.validate.field).required = true];
 }
-message CreateEmailConfigReply {}
+message CreateEmailConfigReply {
+	int64 uid = 1;
+}
 
 message UpdateEmailConfigRequest {
 	int64 uid = 1 [(buf.validate.field).required = true];
