@@ -31,11 +31,11 @@ func newNamespace(db *gorm.DB, opts ...gen.DOOption) namespace {
 	_namespace.UID = field.NewInt64(tableName, "uid")
 	_namespace.CreatedAt = field.NewTime(tableName, "created_at")
 	_namespace.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_namespace.DeletedAt = field.NewField(tableName, "deleted_at")
 	_namespace.Creator = field.NewInt64(tableName, "creator")
+	_namespace.DeletedAt = field.NewField(tableName, "deleted_at")
 	_namespace.Name = field.NewString(tableName, "name")
 	_namespace.Metadata = field.NewField(tableName, "metadata")
-	_namespace.Status = field.NewUint8(tableName, "status")
+	_namespace.Status = field.NewInt32(tableName, "status")
 
 	_namespace.fillFieldMap()
 
@@ -50,11 +50,11 @@ type namespace struct {
 	UID       field.Int64
 	CreatedAt field.Time
 	UpdatedAt field.Time
-	DeletedAt field.Field
 	Creator   field.Int64
+	DeletedAt field.Field
 	Name      field.String
 	Metadata  field.Field
-	Status    field.Uint8
+	Status    field.Int32
 
 	fieldMap map[string]field.Expr
 }
@@ -75,11 +75,11 @@ func (n *namespace) updateTableName(table string) *namespace {
 	n.UID = field.NewInt64(table, "uid")
 	n.CreatedAt = field.NewTime(table, "created_at")
 	n.UpdatedAt = field.NewTime(table, "updated_at")
-	n.DeletedAt = field.NewField(table, "deleted_at")
 	n.Creator = field.NewInt64(table, "creator")
+	n.DeletedAt = field.NewField(table, "deleted_at")
 	n.Name = field.NewString(table, "name")
 	n.Metadata = field.NewField(table, "metadata")
-	n.Status = field.NewUint8(table, "status")
+	n.Status = field.NewInt32(table, "status")
 
 	n.fillFieldMap()
 
@@ -101,8 +101,8 @@ func (n *namespace) fillFieldMap() {
 	n.fieldMap["uid"] = n.UID
 	n.fieldMap["created_at"] = n.CreatedAt
 	n.fieldMap["updated_at"] = n.UpdatedAt
-	n.fieldMap["deleted_at"] = n.DeletedAt
 	n.fieldMap["creator"] = n.Creator
+	n.fieldMap["deleted_at"] = n.DeletedAt
 	n.fieldMap["name"] = n.Name
 	n.fieldMap["metadata"] = n.Metadata
 	n.fieldMap["status"] = n.Status

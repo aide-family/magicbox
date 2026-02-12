@@ -61,7 +61,9 @@ message CreateNamespaceRequest {
 	}];
 	map<string, string> metadata = 2;
 }
-message CreateNamespaceReply {}
+message CreateNamespaceReply {
+	int64 uid = 1;
+}
 
 message UpdateNamespaceRequest {
 	int64 uid = 1 [(buf.validate.field).required = true];

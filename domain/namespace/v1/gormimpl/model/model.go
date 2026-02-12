@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/aide-family/magicbox/enum"
 	"github.com/aide-family/magicbox/hello"
 	"github.com/aide-family/magicbox/safety"
 
@@ -23,11 +24,11 @@ type Namespace struct {
 	UID       snowflake.ID                `gorm:"column:uid;not null;uniqueIndex"`
 	CreatedAt time.Time                   `gorm:"column:created_at;type:datetime;not null;"`
 	UpdatedAt time.Time                   `gorm:"column:updated_at;type:datetime;not null;"`
-	DeletedAt gorm.DeletedAt              `gorm:"column:deleted_at;type:datetime;uniqueIndex:idx__namespace__name__deleted_at"`
 	Creator   snowflake.ID                `gorm:"column:creator;not null;index"`
+	DeletedAt gorm.DeletedAt              `gorm:"column:deleted_at;type:datetime;uniqueIndex:idx__namespace__name__deleted_at"`
 	Name      string                      `gorm:"column:name;type:varchar(100);not null;uniqueIndex:idx__namespace__name__deleted_at"`
 	Metadata  *safety.Map[string, string] `gorm:"column:metadata;type:json;"`
-	Status    uint8                       `gorm:"column:status;type:tinyint;not null;default:0"`
+	Status    enum.GlobalStatus           `gorm:"column:status;type:int;not null;default:0"`
 }
 
 func (Namespace) TableName() string {

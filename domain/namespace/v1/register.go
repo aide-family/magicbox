@@ -2,6 +2,7 @@
 package namespacev1
 
 import (
+	apiv1 "github.com/aide-family/magicbox/api/v1"
 	"github.com/aide-family/magicbox/config"
 	"github.com/aide-family/magicbox/safety"
 )
@@ -16,7 +17,7 @@ func NewRegistry() Registry {
 }
 
 // NamespaceFactoryV1 is the factory function for the namespace service.
-type NamespaceFactoryV1 func(c *config.DomainConfig) (Repository, func() error, error)
+type NamespaceFactoryV1 func(c *config.DomainConfig) (apiv1.NamespaceServer, func() error, error)
 
 type Registry interface {
 	RegisterNamespaceV1Factory(name config.DomainConfig_Driver, factory NamespaceFactoryV1)
