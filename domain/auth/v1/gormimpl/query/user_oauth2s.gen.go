@@ -36,7 +36,7 @@ func newOAuth2User(db *gorm.DB, opts ...gen.DOOption) oAuth2User {
 	_oAuth2User.Avatar = field.NewString(tableName, "avatar")
 	_oAuth2User.APP = field.NewString(tableName, "app")
 	_oAuth2User.Raw = field.NewBytes(tableName, "raw")
-	_oAuth2User.UID = field.NewInt64(tableName, "user_id")
+	_oAuth2User.UserID = field.NewInt64(tableName, "user_id")
 
 	_oAuth2User.fillFieldMap()
 
@@ -56,7 +56,7 @@ type oAuth2User struct {
 	Avatar    field.String
 	APP       field.String
 	Raw       field.Bytes
-	UID       field.Int64
+	UserID    field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -82,7 +82,7 @@ func (o *oAuth2User) updateTableName(table string) *oAuth2User {
 	o.Avatar = field.NewString(table, "avatar")
 	o.APP = field.NewString(table, "app")
 	o.Raw = field.NewBytes(table, "raw")
-	o.UID = field.NewInt64(table, "user_id")
+	o.UserID = field.NewInt64(table, "user_id")
 
 	o.fillFieldMap()
 
@@ -109,7 +109,7 @@ func (o *oAuth2User) fillFieldMap() {
 	o.fieldMap["avatar"] = o.Avatar
 	o.fieldMap["app"] = o.APP
 	o.fieldMap["raw"] = o.Raw
-	o.fieldMap["user_id"] = o.UID
+	o.fieldMap["user_id"] = o.UserID
 }
 
 func (o oAuth2User) clone(db *gorm.DB) oAuth2User {

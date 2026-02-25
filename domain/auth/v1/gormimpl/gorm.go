@@ -6,7 +6,6 @@ import (
 	"errors"
 	"net/url"
 
-	"github.com/bwmarrin/snowflake"
 	klog "github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -17,7 +16,6 @@ import (
 	authv1 "github.com/aide-family/magicbox/domain/auth/v1"
 	"github.com/aide-family/magicbox/domain/auth/v1/gormimpl/model"
 	"github.com/aide-family/magicbox/domain/auth/v1/gormimpl/query"
-	"github.com/aide-family/magicbox/hello"
 	"github.com/aide-family/magicbox/jwt"
 	"github.com/aide-family/magicbox/merr"
 	"github.com/aide-family/magicbox/oauth"
@@ -42,17 +40,12 @@ func NewGormRepository(c *config.DomainConfig, jwtConfig *config.JWT) (authv1.Re
 	}
 	query.SetDefault(db)
 
-	node, err := snowflake.NewNode(hello.NodeID())
-	if err != nil {
-		return nil, nil, err
-	}
-	return &gormRepository{repoConfig: c, db: db, node: node, jwtConfig: jwtConfig}, close, nil
+	return &gormRepository{repoConfig: c, db: db, jwtConfig: jwtConfig}, close, nil
 }
 
 type gormRepository struct {
 	repoConfig *config.DomainConfig
 	db         *gorm.DB
-	node       *snowflake.Node
 	jwtConfig  *config.JWT
 }
 
@@ -119,10 +112,9 @@ func (g *gormRepository) findOrCreateOAuth2User(ctx context.Context, user *oauth
 			Avatar: user.GetAvatar(),
 			APP:    user.GetApp().String(),
 			Raw:    user.GetRaw(),
-			UID:    g.node.Generate(),
 		}
 		if err := oauth2Mutation.WithContext(ctx).Create(oauth2UserDO); err != nil {
-			klog.Context(ctx).Debugw("msg", "create oauth2 user failed", "error", err, "oauth2UserUID", oauth2UserDO.UID)
+			klog.Context(ctx).Debugw("msg", "create oauth2 user failed", "error", err)
 			return nil, merr.ErrorInternalServer("create oauth2 user failed").WithCause(err).WithCause(err)
 		}
 	}
@@ -143,10 +135,9 @@ func (g *gormRepository) findOrCreateUser(ctx context.Context, user *oauth.OAuth
 			Avatar:   user.GetAvatar(),
 			Remark:   user.GetRemark(),
 			Nickname: user.GetNickname(),
-			UID:      g.node.Generate(),
 		}
 		if err := userMutation.WithContext(ctx).Create(userDO); err != nil {
-			klog.Context(ctx).Debugw("msg", "create user failed", "error", err, "userUID", userDO.UID)
+			klog.Context(ctx).Debugw("msg", "create user failed", "error", err)
 			return nil, merr.ErrorInternalServer("create user failed").WithCause(err)
 		}
 	}
@@ -154,12 +145,12 @@ func (g *gormRepository) findOrCreateUser(ctx context.Context, user *oauth.OAuth
 }
 
 func (g *gormRepository) bindUserAndOAuth2User(ctx context.Context, user *model.User, oauth2User *model.OAuth2User) error {
-	if int64(oauth2User.UID) == int64(user.UID) {
+	if oauth2User.UserID == user.ID {
 		return nil
 	}
 	oauth2Mutation := query.OAuth2User
-	if _, err := oauth2Mutation.WithContext(ctx).Where(oauth2Mutation.UID.Eq(int64(oauth2User.UID))).Update(oauth2Mutation.UID, int64(user.UID)); err != nil {
-		klog.Context(ctx).Debugw("msg", "update oauth2 user failed", "error", err, "oauth2UserUID", oauth2User.UID, "userUID", user.UID)
+	if _, err := oauth2Mutation.WithContext(ctx).Where(oauth2Mutation.ID.Eq(oauth2User.ID)).Update(oauth2Mutation.UserID, user.ID); err != nil {
+		klog.Context(ctx).Debugw("msg", "update oauth2 user failed", "error", err, "oauth2UserUserID", oauth2User.UserID, "userID", user.ID)
 		return merr.ErrorInternalServer("update oauth2 user failed").WithCause(err)
 	}
 	return nil
@@ -167,7 +158,7 @@ func (g *gormRepository) bindUserAndOAuth2User(ctx context.Context, user *model.
 
 func (g *gormRepository) generateToken(ctx context.Context, user *model.User) (string, error) {
 	claims := jwt.NewJwtClaims(g.jwtConfig, jwt.BaseInfo{
-		UID:      user.UID,
+		UID:      user.ID,
 		Username: user.Email,
 	})
 	return claims.GenerateToken()
