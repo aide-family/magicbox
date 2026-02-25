@@ -39,6 +39,7 @@ message ORMConfig {
 		TYPE_UNKNOWN = 0;
 		MYSQL = 1;
 		SQLITE = 2;
+		POSTGRES = 3;
 	}
 	Dialector dialector = 1;
 	google.protobuf.Any options = 2;
@@ -49,14 +50,23 @@ message ORMConfig {
 message MySQLOptions {
 	string username = 1;
 	string password = 2;
-	string host     = 3;
-	int32 port     = 4;
+	string host = 3;
+	int32 port = 4;
 	string database = 5;
 	map<string, string> parameters = 6;
 }
 
 message SQLiteOptions {
 	string dsn = 1;
+}
+
+message PostgreSQLOptions {
+	string username = 1;
+	string password = 2;
+	string host = 3;
+	int32 port = 4;
+	string database = 5;
+	map<string, string> parameters = 6;
 }
 
 message ReportConfig {
