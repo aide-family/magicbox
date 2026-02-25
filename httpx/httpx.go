@@ -52,10 +52,12 @@ func (c *Client) Get(ctx context.Context, url string, options ...Option) (*http.
 }
 
 func (c *Client) Post(ctx context.Context, url string, body []byte, options ...Option) (*http.Response, error) {
+	options = append(options, WithBody(body))
 	return c.Do(ctx, MethodPost, url, options...)
 }
 
 func (c *Client) Put(ctx context.Context, url string, body []byte, options ...Option) (*http.Response, error) {
+	options = append(options, WithBody(body))
 	return c.Do(ctx, MethodPut, url, options...)
 }
 
