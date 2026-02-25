@@ -68,14 +68,14 @@ func (g *gormRepository) CreateNamespace(ctx context.Context, req *apiv1.CreateN
 		return nil, merr.ErrorInternalServer("create namespace failed: %v", err)
 	}
 	return &apiv1.CreateNamespaceReply{
-		Uid: namespace.UID.Int64(),
+		Uid: namespace.ID.Int64(),
 	}, nil
 }
 
 // DeleteNamespace implements [namespacev1.Repository].
 func (g *gormRepository) DeleteNamespace(ctx context.Context, req *apiv1.DeleteNamespaceRequest) (*apiv1.DeleteNamespaceReply, error) {
 	namespaceMutation := query.Namespace
-	_, err := namespaceMutation.WithContext(ctx).Where(namespaceMutation.UID.Eq(req.Uid)).Delete()
+	_, err := namespaceMutation.WithContext(ctx).Where(namespaceMutation.ID.Eq(req.Uid)).Delete()
 	if err != nil {
 		return nil, merr.ErrorInternalServer("delete namespace failed: %v", err)
 	}
@@ -99,7 +99,7 @@ func (g *gormRepository) ListNamespace(ctx context.Context, req *apiv1.ListNames
 	if req.Page > 0 && req.PageSize > 0 {
 		wrappers = wrappers.Limit(int(req.PageSize)).Offset(int(req.PageSize * (req.Page - 1)))
 	}
-	wrappers = wrappers.Order(namespaceMutation.UID.Desc())
+	wrappers = wrappers.Order(namespaceMutation.ID.Desc())
 	queryNamespaces, err := wrappers.Find()
 	if err != nil {
 		return nil, merr.ErrorInternalServer("list namespace failed: %v", err)
@@ -124,7 +124,7 @@ func (g *gormRepository) UpdateNamespace(ctx context.Context, req *apiv1.UpdateN
 		namespaceMutation.Metadata.Value(safety.NewMap(req.Metadata)),
 		namespaceMutation.Remark.Value(req.Remark),
 	}
-	_, err := namespaceMutation.WithContext(ctx).Where(namespaceMutation.UID.Eq(req.Uid)).UpdateColumnSimple(columns...)
+	_, err := namespaceMutation.WithContext(ctx).Where(namespaceMutation.ID.Eq(req.Uid)).UpdateColumnSimple(columns...)
 	if err != nil {
 		return nil, merr.ErrorInternalServer("update namespace failed: %v", err)
 	}
@@ -134,7 +134,7 @@ func (g *gormRepository) UpdateNamespace(ctx context.Context, req *apiv1.UpdateN
 // UpdateNamespaceStatus implements [namespacev1.Repository].
 func (g *gormRepository) UpdateNamespaceStatus(ctx context.Context, req *apiv1.UpdateNamespaceStatusRequest) (*apiv1.UpdateNamespaceStatusReply, error) {
 	namespaceMutation := query.Namespace
-	_, err := namespaceMutation.WithContext(ctx).Where(namespaceMutation.UID.Eq(req.Uid)).UpdateColumnSimple(namespaceMutation.Status.Value(int32(req.Status)))
+	_, err := namespaceMutation.WithContext(ctx).Where(namespaceMutation.ID.Eq(req.Uid)).UpdateColumnSimple(namespaceMutation.Status.Value(int32(req.Status)))
 	if err != nil {
 		return nil, merr.ErrorInternalServer("update namespace status failed: %v", err)
 	}
@@ -142,7 +142,7 @@ func (g *gormRepository) UpdateNamespaceStatus(ctx context.Context, req *apiv1.U
 }
 
 func (g *gormRepository) GetNamespace(ctx context.Context, req *apiv1.GetNamespaceRequest) (*apiv1.NamespaceItem, error) {
-	namespace, err := query.Namespace.WithContext(ctx).Where(query.Namespace.UID.Eq(req.Uid)).First()
+	namespace, err := query.Namespace.WithContext(ctx).Where(query.Namespace.ID.Eq(req.Uid)).First()
 	if err != nil {
 		return nil, merr.ErrorInternalServer("get namespace failed: %v", err)
 	}
@@ -164,11 +164,11 @@ func (g *gormRepository) SelectNamespace(ctx context.Context, req *apiv1.SelectN
 		return nil, merr.ErrorInternalServer("count namespace failed: %v", err)
 	}
 	if req.LastUID > 0 {
-		wrappers = wrappers.Where(mutation.UID.Lt(req.LastUID))
+		wrappers = wrappers.Where(mutation.ID.Lt(req.LastUID))
 	}
 	wrappers = wrappers.Limit(int(req.Limit))
-	wrappers = wrappers.Select(mutation.UID, mutation.Name, mutation.Status, mutation.DeletedAt, mutation.Remark)
-	wrappers = wrappers.Order(mutation.UID.Desc())
+	wrappers = wrappers.Select(mutation.ID, mutation.Name, mutation.Status, mutation.DeletedAt, mutation.Remark)
+	wrappers = wrappers.Order(mutation.ID.Desc())
 	queryNamespaces, err := wrappers.Find()
 	if err != nil {
 		return nil, merr.ErrorInternalServer("select namespace failed: %v", err)

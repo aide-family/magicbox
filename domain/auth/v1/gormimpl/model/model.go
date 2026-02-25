@@ -18,15 +18,15 @@ func Models() []any {
 
 type User struct {
 	ID        snowflake.ID   `gorm:"column:id;not null;primaryKey"`
-	CreatedAt time.Time      `gorm:"column:created_at;type:datetime;not null;"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;type:datetime;not null;"`
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:datetime;uniqueIndex:idx__user__email__deleted_at"`
+	CreatedAt time.Time      `gorm:"column:created_at;not null;"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;not null;"`
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;uniqueIndex:idx__user__email__deleted_at"`
 	Name      string         `gorm:"column:name;type:varchar(100);not null;default:''"`
 	Nickname  string         `gorm:"column:nickname;type:varchar(100);not null;default:''"`
 	Email     string         `gorm:"column:email;type:varchar(100);not null;uniqueIndex:idx__user__email__deleted_at"`
 	Avatar    string         `gorm:"column:avatar;type:varchar(100);not null;default:''"`
 	Remark    string         `gorm:"column:remark;type:varchar(100);not null;default:''"`
-	Status    uint8          `gorm:"column:status;type:tinyint;not null;default:0"`
+	Status    uint8          `gorm:"column:status;not null;default:0"`
 }
 
 func (User) TableName() string {
@@ -46,8 +46,8 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 
 type OAuth2User struct {
 	ID        uint32       `gorm:"column:id;primaryKey;autoIncrement"`
-	CreatedAt time.Time    `gorm:"column:created_at;type:datetime;not null;"`
-	UpdatedAt time.Time    `gorm:"column:updated_at;type:datetime;not null;"`
+	CreatedAt time.Time    `gorm:"column:created_at;not null;"`
+	UpdatedAt time.Time    `gorm:"column:updated_at;not null;"`
 	OpenID    string       `gorm:"column:open_id;type:varchar(100);not null;uniqueIndex:idx__oauth2_user__app__open_id"`
 	Name      string       `gorm:"column:name;type:varchar(100);not null;default:''"`
 	Email     string       `gorm:"column:email;type:varchar(100);not null;default:'';index:idx__oauth2_user__email"`

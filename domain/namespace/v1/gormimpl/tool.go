@@ -15,7 +15,7 @@ func ConvertNamespaceItemSelect(namespaceDo *model.Namespace) *apiv1.NamespaceIt
 		return nil
 	}
 	return &apiv1.NamespaceItemSelect{
-		Value:    namespaceDo.UID.Int64(),
+		Value:    namespaceDo.ID.Int64(),
 		Label:    namespaceDo.Name,
 		Disabled: namespaceDo.DeletedAt.Valid || namespaceDo.Status != enum.GlobalStatus_ENABLED,
 		Tooltip:  namespaceDo.Remark,
@@ -30,7 +30,7 @@ func ConvertNamespaceItem(namespaceDo *model.Namespace) *apiv1.NamespaceItem {
 		namespaceDo.Metadata = safety.NewMap(make(map[string]string))
 	}
 	return &apiv1.NamespaceItem{
-		Uid:       namespaceDo.UID.Int64(),
+		Uid:       namespaceDo.ID.Int64(),
 		Name:      namespaceDo.Name,
 		Metadata:  namespaceDo.Metadata.Map(),
 		Status:    namespaceDo.Status,
