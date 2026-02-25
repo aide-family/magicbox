@@ -37,11 +37,6 @@ func newOAuth2User(db *gorm.DB, opts ...gen.DOOption) oAuth2User {
 	_oAuth2User.APP = field.NewString(tableName, "app")
 	_oAuth2User.Raw = field.NewBytes(tableName, "raw")
 	_oAuth2User.UID = field.NewInt64(tableName, "user_id")
-	_oAuth2User.User = oAuth2UserHasOneUser{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("User", "model.User"),
-	}
 
 	_oAuth2User.fillFieldMap()
 
@@ -62,7 +57,6 @@ type oAuth2User struct {
 	APP       field.String
 	Raw       field.Bytes
 	UID       field.Int64
-	User      oAuth2UserHasOneUser
 
 	fieldMap map[string]field.Expr
 }
@@ -105,7 +99,7 @@ func (o *oAuth2User) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (o *oAuth2User) fillFieldMap() {
-	o.fieldMap = make(map[string]field.Expr, 11)
+	o.fieldMap = make(map[string]field.Expr, 10)
 	o.fieldMap["id"] = o.ID
 	o.fieldMap["created_at"] = o.CreatedAt
 	o.fieldMap["updated_at"] = o.UpdatedAt
@@ -116,101 +110,16 @@ func (o *oAuth2User) fillFieldMap() {
 	o.fieldMap["app"] = o.APP
 	o.fieldMap["raw"] = o.Raw
 	o.fieldMap["user_id"] = o.UID
-
 }
 
 func (o oAuth2User) clone(db *gorm.DB) oAuth2User {
 	o.oAuth2UserDo.ReplaceConnPool(db.Statement.ConnPool)
-	o.User.db = db.Session(&gorm.Session{Initialized: true})
-	o.User.db.Statement.ConnPool = db.Statement.ConnPool
 	return o
 }
 
 func (o oAuth2User) replaceDB(db *gorm.DB) oAuth2User {
 	o.oAuth2UserDo.ReplaceDB(db)
-	o.User.db = db.Session(&gorm.Session{})
 	return o
-}
-
-type oAuth2UserHasOneUser struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a oAuth2UserHasOneUser) Where(conds ...field.Expr) *oAuth2UserHasOneUser {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a oAuth2UserHasOneUser) WithContext(ctx context.Context) *oAuth2UserHasOneUser {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a oAuth2UserHasOneUser) Session(session *gorm.Session) *oAuth2UserHasOneUser {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a oAuth2UserHasOneUser) Model(m *model.OAuth2User) *oAuth2UserHasOneUserTx {
-	return &oAuth2UserHasOneUserTx{a.db.Model(m).Association(a.Name())}
-}
-
-func (a oAuth2UserHasOneUser) Unscoped() *oAuth2UserHasOneUser {
-	a.db = a.db.Unscoped()
-	return &a
-}
-
-type oAuth2UserHasOneUserTx struct{ tx *gorm.Association }
-
-func (a oAuth2UserHasOneUserTx) Find() (result *model.User, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a oAuth2UserHasOneUserTx) Append(values ...*model.User) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a oAuth2UserHasOneUserTx) Replace(values ...*model.User) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a oAuth2UserHasOneUserTx) Delete(values ...*model.User) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a oAuth2UserHasOneUserTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a oAuth2UserHasOneUserTx) Count() int64 {
-	return a.tx.Count()
-}
-
-func (a oAuth2UserHasOneUserTx) Unscoped() *oAuth2UserHasOneUserTx {
-	a.tx = a.tx.Unscoped()
-	return &a
 }
 
 type oAuth2UserDo struct{ gen.DO }
