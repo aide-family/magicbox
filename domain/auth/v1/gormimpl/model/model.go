@@ -39,12 +39,11 @@ type OAuth2User struct {
 	UpdatedAt time.Time    `gorm:"column:updated_at;type:datetime;not null;"`
 	OpenID    string       `gorm:"column:open_id;type:varchar(100);not null;uniqueIndex:idx__oauth2_user__app__open_id"`
 	Name      string       `gorm:"column:name;type:varchar(100);not null;default:''"`
-	Email     string       `gorm:"column:email;type:varchar(100);not null;default:'';index"`
+	Email     string       `gorm:"column:email;type:varchar(100);not null;default:'';index:idx__oauth2_user__email"`
 	Avatar    string       `gorm:"column:avatar;type:varchar(100);not null;default:''"`
 	APP       string       `gorm:"column:app;type:varchar(100);not null;uniqueIndex:idx__oauth2_user__app__open_id"`
 	Raw       []byte       `gorm:"column:raw;type:json;"`
 	UID       snowflake.ID `gorm:"column:user_id;not null;index:idx__oauth2_user__user_uid"`
-	User      *User        `gorm:"foreignKey:UID;references:UID"`
 }
 
 func (OAuth2User) TableName() string {
