@@ -6,6 +6,7 @@ import (
 
 	apiv1 "github.com/aide-family/magicbox/api/v1"
 	"github.com/aide-family/magicbox/domain/member/v1/gormimpl/model"
+	"github.com/aide-family/magicbox/enum"
 )
 
 func convertMemberItem(m *model.Member) *apiv1.MemberItem {
@@ -34,7 +35,7 @@ func convertMemberSelectItem(m *model.Member) *apiv1.SelectMemberItem {
 	return &apiv1.SelectMemberItem{
 		Value:    m.ID.Int64(),
 		Label:    strings.Join([]string{m.Name, "(", m.Nickname, ")"}, " "),
-		Disabled: false,
+		Disabled: m.Status != enum.MemberStatus_JOINED || m.DeletedAt.Valid,
 		Tooltip:  m.Remark,
 	}
 }
