@@ -81,6 +81,11 @@ message CreateRecipientGroupRequest {
         max_len: 100,
     }];
     map<string, string> metadata = 2;
+    repeated int64 templates = 3;
+    repeated int64 emailConfigs = 4;
+    repeated int64 smsConfigs = 5;
+    repeated int64 webhookConfigs = 6;
+    repeated int64 members = 7;
 }
 
 message CreateRecipientGroupReply{
