@@ -40,6 +40,7 @@ message MemberItem {
     string nickname = 9;
     string avatar = 10;
     string remark = 11;
+    int64 namespaceUID = 12;
 }
 
 message SelectMemberItem {

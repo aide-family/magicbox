@@ -14,17 +14,18 @@ func convertMemberItem(m *model.Member) *apiv1.MemberItem {
 		return nil
 	}
 	return &apiv1.MemberItem{
-		Uid:       m.ID.Int64(),
-		Email:     m.Email,
-		Phone:     m.Phone,
-		Status:    m.Status,
-		CreatedAt: m.CreatedAt.Format(time.DateTime),
-		UpdatedAt: m.UpdatedAt.Format(time.DateTime),
-		UserUID:   m.UserUID.Int64(),
-		Name:      m.Name,
-		Nickname:  m.Nickname,
-		Avatar:    m.Avatar,
-		Remark:    m.Remark,
+		Uid:          m.ID.Int64(),
+		Email:        m.Email,
+		Phone:        m.Phone,
+		Status:       m.Status,
+		CreatedAt:    m.CreatedAt.Format(time.DateTime),
+		UpdatedAt:    m.UpdatedAt.Format(time.DateTime),
+		UserUID:      m.UserUID.Int64(),
+		Name:         m.Name,
+		Nickname:     m.Nickname,
+		Avatar:       m.Avatar,
+		Remark:       m.Remark,
+		NamespaceUID: m.NamespaceUID.Int64(),
 	}
 }
 
