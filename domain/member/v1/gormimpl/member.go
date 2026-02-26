@@ -72,6 +72,9 @@ func (g *gormRepository) ListMember(ctx context.Context, req *apiv1.ListMemberRe
 	if req.GetUserUID() > 0 {
 		wrappers = wrappers.Where(mut.UserUID.Eq(req.GetUserUID()))
 	}
+	if len(req.GetUids()) > 0 {
+		wrappers = wrappers.Where(mut.UserUID.In(req.GetUids()...))
+	}
 	total, err := wrappers.Count()
 	if err != nil {
 		return nil, merr.ErrorInternalServer("count member failed: %v", err)
@@ -109,6 +112,9 @@ func (g *gormRepository) SelectMember(ctx context.Context, req *apiv1.SelectMemb
 	}
 	if req.GetLastUID() > 0 {
 		wrappers = wrappers.Where(mut.ID.Lt(req.GetLastUID()))
+	}
+	if len(req.GetUids()) > 0 {
+		wrappers = wrappers.Where(mut.UserUID.In(req.GetUids()...))
 	}
 	total, err := wrappers.Count()
 	if err != nil {

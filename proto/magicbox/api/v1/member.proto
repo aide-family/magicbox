@@ -72,6 +72,7 @@ message ListMemberRequest {
         expression: "this.size() <= 200",
         message: "phone must be less than or equal to 200",
     }];
+    repeated int64 uids = 8;
 }
 message ListMemberReply {
     repeated MemberItem items = 1;
@@ -95,6 +96,7 @@ message SelectMemberRequest {
     }];
     int64 lastUID = 3;
     magicbox.enum.MemberStatus status = 4;
+    repeated int64 uids = 5;
 }
 message SelectMemberReply {
     repeated SelectMemberItem items = 1;
