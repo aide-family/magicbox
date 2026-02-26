@@ -9,6 +9,10 @@ option java_package = "rabbit.api.v1";
 import "google/api/annotations.proto";
 import "buf/validate/validate.proto";
 import "magicbox/enum/enum.proto";
+import "rabbit/api/v1/template.proto";
+import "rabbit/api/v1/email.proto";
+import "rabbit/api/v1/webhook.proto";
+import "magicbox/api/v1/member.proto";
 
 service RecipientGroupService {
     rpc CreateRecipientGroup(CreateRecipientGroupRequest) returns (CreateRecipientGroupReply) {
@@ -55,6 +59,13 @@ message RecipientGroupItem {
     int64 uid = 1;
     string name = 2;
     map<string, string> metadata = 3;
+    repeated rabbit.api.v1.TemplateItem templates = 4;
+    repeated rabbit.api.v1.EmailConfigItem emailConfigs = 5;
+    repeated rabbit.api.v1.WebhookItem webhookConfigs = 6;
+    repeated magicbox.api.v1.MemberItem members = 8;
+    magicbox.enum.GlobalStatus status = 9;
+    string createdAt = 10;
+    string updatedAt = 11;
 }
 
 message SelectRecipientGroupItem {

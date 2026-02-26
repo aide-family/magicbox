@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 import "buf/validate/validate.proto";
 import "magicbox/enum/enum.proto";
 
-service UserService {
+service User {
     rpc GetUser(GetUserRequest) returns (UserItem) {
         option (google.api.http) = {
             get: "/v1/user/{uid}"
@@ -46,8 +46,8 @@ message UserItem {
     string avatar = 5;
     magicbox.enum.GlobalStatus status = 6;
     string remark = 7;
-    int64 createdAt = 8;
-    int64 updatedAt = 9;
+    string createdAt = 8;
+    string updatedAt = 9;
 }
 
 message SelectUserItem {

@@ -77,3 +77,10 @@ enum UserStatus {
 	ACTIVE = 1;
 	BANNED = 2;
 }
+
+enum MemberStatus {
+	MemberStatus_UNKNOWN = 0;
+	JOINED = 1;
+	INVITED = 2;
+	EXPIRED = 3;
+}

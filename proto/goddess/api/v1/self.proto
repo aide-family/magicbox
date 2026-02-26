@@ -9,7 +9,7 @@ import "buf/validate/validate.proto";
 import "goddess/api/v1/namespace.proto";
 import "goddess/api/v1/user.proto";
 
-service SelfService {
+service Self {
     rpc Info(InfoRequest) returns (goddess.api.v1.UserItem) {
         option (google.api.http) = {
             get: "/v1/self/info"
