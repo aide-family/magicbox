@@ -4,7 +4,6 @@ package gormimpl
 import (
 	"context"
 
-	"github.com/bwmarrin/snowflake"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 	"gorm.io/gen/field"
@@ -18,7 +17,6 @@ import (
 	"github.com/aide-family/magicbox/domain/namespace/v1/gormimpl/model"
 	"github.com/aide-family/magicbox/domain/namespace/v1/gormimpl/query"
 	"github.com/aide-family/magicbox/enum"
-	"github.com/aide-family/magicbox/hello"
 	"github.com/aide-family/magicbox/merr"
 	"github.com/aide-family/magicbox/pointer"
 	"github.com/aide-family/magicbox/safety"
@@ -41,18 +39,13 @@ func NewGormRepository(c *config.DomainConfig) (apiv1.NamespaceServer, func() er
 		return nil, nil, err
 	}
 	query.SetDefault(db)
-	node, err := snowflake.NewNode(hello.NodeID())
-	if err != nil {
-		return nil, nil, err
-	}
-	return &gormRepository{repoConfig: c, db: db, node: node}, close, nil
+	return &gormRepository{repoConfig: c, db: db}, close, nil
 }
 
 type gormRepository struct {
 	apiv1.UnimplementedNamespaceServer
 	repoConfig *config.DomainConfig
 	db         *gorm.DB
-	node       *snowflake.Node
 }
 
 // CreateNamespace implements [namespacev1.Repository].

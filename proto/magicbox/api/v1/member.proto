@@ -31,14 +31,15 @@ service Member {
 message MemberItem {
     int64 uid = 1;
     string email = 2;
-    magicbox.enum.MemberStatus status = 3;
-    string createdAt = 4;
-    string updatedAt = 5;
-    int64 userUID = 6;
-    string name = 7;
-    string nickname = 8;
-    string avatar = 9;
-    string remark = 10;
+    string phone = 3;
+    magicbox.enum.MemberStatus status = 4;
+    string createdAt = 5;
+    string updatedAt = 6;
+    int64 userUID = 7;
+    string name = 8;
+    string nickname = 9;
+    string avatar = 10;
+    string remark = 11;
 }
 
 message SelectMemberItem {
@@ -66,6 +67,10 @@ message ListMemberRequest {
     string email = 6 [(buf.validate.field).cel = {
         expression: "this.size() <= 200",
         message: "email must be less than or equal to 200",
+    }];
+    string phone = 7 [(buf.validate.field).cel = {
+        expression: "this.size() <= 200",
+        message: "phone must be less than or equal to 200",
     }];
 }
 message ListMemberReply {
