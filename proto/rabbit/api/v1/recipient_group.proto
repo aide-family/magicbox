@@ -135,6 +135,7 @@ message SelectRecipientGroupRequest {
         message: "limit must be greater than or equal to 1 and less than or equal to 100",
     }];
     int64 lastUID = 3;
+    magicbox.enum.GlobalStatus status = 4;
 }
 
 message SelectRecipientGroupReply {
