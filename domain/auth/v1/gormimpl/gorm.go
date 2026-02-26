@@ -16,6 +16,7 @@ import (
 	authv1 "github.com/aide-family/magicbox/domain/auth/v1"
 	"github.com/aide-family/magicbox/domain/auth/v1/gormimpl/model"
 	"github.com/aide-family/magicbox/domain/auth/v1/gormimpl/query"
+	"github.com/aide-family/magicbox/enum"
 	"github.com/aide-family/magicbox/jwt"
 	"github.com/aide-family/magicbox/merr"
 	"github.com/aide-family/magicbox/oauth"
@@ -135,6 +136,7 @@ func (g *gormRepository) findOrCreateUser(ctx context.Context, user *oauth.OAuth
 			Avatar:   user.GetAvatar(),
 			Remark:   user.GetRemark(),
 			Nickname: user.GetNickname(),
+			Status:   enum.UserStatus_ACTIVE,
 		}
 		if err := userMutation.WithContext(ctx).Create(userDO); err != nil {
 			klog.Context(ctx).Debugw("msg", "create user failed", "error", err)

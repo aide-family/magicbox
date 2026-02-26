@@ -71,3 +71,9 @@ enum DatasourceDriver {
 	LOGS_ELASTICSEARCH = 1000;
 	TRACE_JAEGER = 2000;
 }
+
+enum UserStatus {
+	UserStatus_UNKNOWN = 0;
+	ACTIVE = 1;
+	BANNED = 2;
+}
