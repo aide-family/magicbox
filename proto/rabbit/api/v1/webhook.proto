@@ -157,6 +157,7 @@ message WebhookItemSelect {
 	string label = 2;
 	bool disabled = 3;
 	string tooltip = 4;
+	magicbox.enum.WebhookAPP app = 5;
 }
 
 message SelectWebhookRequest {
