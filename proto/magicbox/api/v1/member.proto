@@ -26,6 +26,23 @@ service Member {
             get: "/v1/members/select"
         };
     }
+    rpc InviteMember(InviteMemberRequest) returns (InviteMemberReply) {
+        option (google.api.http) = {
+            post: "/v1/member/invite"
+            body: "*"
+        };
+    }
+    rpc DismissMember(DismissMemberRequest) returns (DismissMemberReply) {
+        option (google.api.http) = {
+            delete: "/v1/member/{uid}"
+        };
+    }
+    rpc UpdateMemberStatus(UpdateMemberStatusRequest) returns (UpdateMemberStatusReply) {
+        option (google.api.http) = {
+            put: "/v1/member/{uid}/status"
+            body: "*"
+        };
+    }
 }
 
 message MemberItem {
@@ -104,4 +121,34 @@ message SelectMemberReply {
     int64 total = 2;
     int64 lastUID = 3;
     bool hasMore = 4;
+}
+
+
+message InviteMemberRequest {
+    string email = 1 [(buf.validate.field).required = true, (buf.validate.field).cel = {
+      expression: "this.isEmail()",
+      message: "email must be a valid email address",
+    }];
+    uint32 roleUID = 2;
+}
+message InviteMemberReply {
+    string message = 1;
+}
+
+message DismissMemberRequest {
+    int64 uid = 1 [(buf.validate.field).required = true];
+}
+message DismissMemberReply {
+    string message = 1;
+}
+
+message UpdateMemberStatusRequest {
+    int64 uid = 1 [(buf.validate.field).required = true];
+    magicbox.enum.MemberStatus status = 2 [(buf.validate.field).required = true, (buf.validate.field).cel = {
+        expression: "this in [magicbox.enum.MemberStatus.JOINED, magicbox.enum.MemberStatus.INVITED, magicbox.enum.MemberStatus.EXPIRED]",
+        message: "status must be in ['JOINED', 'INVITED', 'EXPIRED']",
+    }];
+}
+message UpdateMemberStatusReply {
+    string message = 1;
 }

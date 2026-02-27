@@ -19,14 +19,20 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationMemberDismissMember = "/magicbox.api.v1.Member/DismissMember"
 const OperationMemberGetMember = "/magicbox.api.v1.Member/GetMember"
+const OperationMemberInviteMember = "/magicbox.api.v1.Member/InviteMember"
 const OperationMemberListMember = "/magicbox.api.v1.Member/ListMember"
 const OperationMemberSelectMember = "/magicbox.api.v1.Member/SelectMember"
+const OperationMemberUpdateMemberStatus = "/magicbox.api.v1.Member/UpdateMemberStatus"
 
 type MemberHTTPServer interface {
+	DismissMember(context.Context, *DismissMemberRequest) (*DismissMemberReply, error)
 	GetMember(context.Context, *GetMemberRequest) (*MemberItem, error)
+	InviteMember(context.Context, *InviteMemberRequest) (*InviteMemberReply, error)
 	ListMember(context.Context, *ListMemberRequest) (*ListMemberReply, error)
 	SelectMember(context.Context, *SelectMemberRequest) (*SelectMemberReply, error)
+	UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*UpdateMemberStatusReply, error)
 }
 
 func RegisterMemberHTTPServer(s *http.Server, srv MemberHTTPServer) {
@@ -34,6 +40,9 @@ func RegisterMemberHTTPServer(s *http.Server, srv MemberHTTPServer) {
 	r.GET("/v1/members", _Member_ListMember0_HTTP_Handler(srv))
 	r.GET("/v1/member/{uid}", _Member_GetMember0_HTTP_Handler(srv))
 	r.GET("/v1/members/select", _Member_SelectMember0_HTTP_Handler(srv))
+	r.POST("/v1/member/invite", _Member_InviteMember0_HTTP_Handler(srv))
+	r.DELETE("/v1/member/{uid}", _Member_DismissMember0_HTTP_Handler(srv))
+	r.PUT("/v1/member/{uid}/status", _Member_UpdateMemberStatus0_HTTP_Handler(srv))
 }
 
 func _Member_ListMember0_HTTP_Handler(srv MemberHTTPServer) func(ctx http.Context) error {
@@ -96,10 +105,82 @@ func _Member_SelectMember0_HTTP_Handler(srv MemberHTTPServer) func(ctx http.Cont
 	}
 }
 
+func _Member_InviteMember0_HTTP_Handler(srv MemberHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in InviteMemberRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMemberInviteMember)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.InviteMember(ctx, req.(*InviteMemberRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*InviteMemberReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Member_DismissMember0_HTTP_Handler(srv MemberHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DismissMemberRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMemberDismissMember)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DismissMember(ctx, req.(*DismissMemberRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*DismissMemberReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Member_UpdateMemberStatus0_HTTP_Handler(srv MemberHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateMemberStatusRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMemberUpdateMemberStatus)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateMemberStatus(ctx, req.(*UpdateMemberStatusRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UpdateMemberStatusReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type MemberHTTPClient interface {
+	DismissMember(ctx context.Context, req *DismissMemberRequest, opts ...http.CallOption) (rsp *DismissMemberReply, err error)
 	GetMember(ctx context.Context, req *GetMemberRequest, opts ...http.CallOption) (rsp *MemberItem, err error)
+	InviteMember(ctx context.Context, req *InviteMemberRequest, opts ...http.CallOption) (rsp *InviteMemberReply, err error)
 	ListMember(ctx context.Context, req *ListMemberRequest, opts ...http.CallOption) (rsp *ListMemberReply, err error)
 	SelectMember(ctx context.Context, req *SelectMemberRequest, opts ...http.CallOption) (rsp *SelectMemberReply, err error)
+	UpdateMemberStatus(ctx context.Context, req *UpdateMemberStatusRequest, opts ...http.CallOption) (rsp *UpdateMemberStatusReply, err error)
 }
 
 type MemberHTTPClientImpl struct {
@@ -110,6 +191,19 @@ func NewMemberHTTPClient(client *http.Client) MemberHTTPClient {
 	return &MemberHTTPClientImpl{client}
 }
 
+func (c *MemberHTTPClientImpl) DismissMember(ctx context.Context, in *DismissMemberRequest, opts ...http.CallOption) (*DismissMemberReply, error) {
+	var out DismissMemberReply
+	pattern := "/v1/member/{uid}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationMemberDismissMember))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 func (c *MemberHTTPClientImpl) GetMember(ctx context.Context, in *GetMemberRequest, opts ...http.CallOption) (*MemberItem, error) {
 	var out MemberItem
 	pattern := "/v1/member/{uid}"
@@ -117,6 +211,19 @@ func (c *MemberHTTPClientImpl) GetMember(ctx context.Context, in *GetMemberReque
 	opts = append(opts, http.Operation(OperationMemberGetMember))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *MemberHTTPClientImpl) InviteMember(ctx context.Context, in *InviteMemberRequest, opts ...http.CallOption) (*InviteMemberReply, error) {
+	var out InviteMemberReply
+	pattern := "/v1/member/invite"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationMemberInviteMember))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -143,6 +250,19 @@ func (c *MemberHTTPClientImpl) SelectMember(ctx context.Context, in *SelectMembe
 	opts = append(opts, http.Operation(OperationMemberSelectMember))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *MemberHTTPClientImpl) UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...http.CallOption) (*UpdateMemberStatusReply, error) {
+	var out UpdateMemberStatusReply
+	pattern := "/v1/member/{uid}/status"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationMemberUpdateMemberStatus))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

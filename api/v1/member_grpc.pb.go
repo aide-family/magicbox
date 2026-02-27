@@ -19,9 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Member_ListMember_FullMethodName   = "/magicbox.api.v1.Member/ListMember"
-	Member_GetMember_FullMethodName    = "/magicbox.api.v1.Member/GetMember"
-	Member_SelectMember_FullMethodName = "/magicbox.api.v1.Member/SelectMember"
+	Member_ListMember_FullMethodName         = "/magicbox.api.v1.Member/ListMember"
+	Member_GetMember_FullMethodName          = "/magicbox.api.v1.Member/GetMember"
+	Member_SelectMember_FullMethodName       = "/magicbox.api.v1.Member/SelectMember"
+	Member_InviteMember_FullMethodName       = "/magicbox.api.v1.Member/InviteMember"
+	Member_DismissMember_FullMethodName      = "/magicbox.api.v1.Member/DismissMember"
+	Member_UpdateMemberStatus_FullMethodName = "/magicbox.api.v1.Member/UpdateMemberStatus"
 )
 
 // MemberClient is the client API for Member service.
@@ -31,6 +34,9 @@ type MemberClient interface {
 	ListMember(ctx context.Context, in *ListMemberRequest, opts ...grpc.CallOption) (*ListMemberReply, error)
 	GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*MemberItem, error)
 	SelectMember(ctx context.Context, in *SelectMemberRequest, opts ...grpc.CallOption) (*SelectMemberReply, error)
+	InviteMember(ctx context.Context, in *InviteMemberRequest, opts ...grpc.CallOption) (*InviteMemberReply, error)
+	DismissMember(ctx context.Context, in *DismissMemberRequest, opts ...grpc.CallOption) (*DismissMemberReply, error)
+	UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*UpdateMemberStatusReply, error)
 }
 
 type memberClient struct {
@@ -71,6 +77,36 @@ func (c *memberClient) SelectMember(ctx context.Context, in *SelectMemberRequest
 	return out, nil
 }
 
+func (c *memberClient) InviteMember(ctx context.Context, in *InviteMemberRequest, opts ...grpc.CallOption) (*InviteMemberReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InviteMemberReply)
+	err := c.cc.Invoke(ctx, Member_InviteMember_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberClient) DismissMember(ctx context.Context, in *DismissMemberRequest, opts ...grpc.CallOption) (*DismissMemberReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DismissMemberReply)
+	err := c.cc.Invoke(ctx, Member_DismissMember_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberClient) UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*UpdateMemberStatusReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateMemberStatusReply)
+	err := c.cc.Invoke(ctx, Member_UpdateMemberStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemberServer is the server API for Member service.
 // All implementations must embed UnimplementedMemberServer
 // for forward compatibility.
@@ -78,6 +114,9 @@ type MemberServer interface {
 	ListMember(context.Context, *ListMemberRequest) (*ListMemberReply, error)
 	GetMember(context.Context, *GetMemberRequest) (*MemberItem, error)
 	SelectMember(context.Context, *SelectMemberRequest) (*SelectMemberReply, error)
+	InviteMember(context.Context, *InviteMemberRequest) (*InviteMemberReply, error)
+	DismissMember(context.Context, *DismissMemberRequest) (*DismissMemberReply, error)
+	UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*UpdateMemberStatusReply, error)
 	mustEmbedUnimplementedMemberServer()
 }
 
@@ -96,6 +135,15 @@ func (UnimplementedMemberServer) GetMember(context.Context, *GetMemberRequest) (
 }
 func (UnimplementedMemberServer) SelectMember(context.Context, *SelectMemberRequest) (*SelectMemberReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SelectMember not implemented")
+}
+func (UnimplementedMemberServer) InviteMember(context.Context, *InviteMemberRequest) (*InviteMemberReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InviteMember not implemented")
+}
+func (UnimplementedMemberServer) DismissMember(context.Context, *DismissMemberRequest) (*DismissMemberReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DismissMember not implemented")
+}
+func (UnimplementedMemberServer) UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*UpdateMemberStatusReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemberStatus not implemented")
 }
 func (UnimplementedMemberServer) mustEmbedUnimplementedMemberServer() {}
 func (UnimplementedMemberServer) testEmbeddedByValue()                {}
@@ -172,6 +220,60 @@ func _Member_SelectMember_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Member_InviteMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InviteMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServer).InviteMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Member_InviteMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServer).InviteMember(ctx, req.(*InviteMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Member_DismissMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DismissMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServer).DismissMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Member_DismissMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServer).DismissMember(ctx, req.(*DismissMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Member_UpdateMemberStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMemberStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServer).UpdateMemberStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Member_UpdateMemberStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServer).UpdateMemberStatus(ctx, req.(*UpdateMemberStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Member_ServiceDesc is the grpc.ServiceDesc for Member service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +292,18 @@ var Member_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SelectMember",
 			Handler:    _Member_SelectMember_Handler,
+		},
+		{
+			MethodName: "InviteMember",
+			Handler:    _Member_InviteMember_Handler,
+		},
+		{
+			MethodName: "DismissMember",
+			Handler:    _Member_DismissMember_Handler,
+		},
+		{
+			MethodName: "UpdateMemberStatus",
+			Handler:    _Member_UpdateMemberStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

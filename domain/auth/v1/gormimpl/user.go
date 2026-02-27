@@ -44,6 +44,35 @@ type gormUserRepository struct {
 	db         *gorm.DB
 }
 
+// BanUser implements [v1.UserServer].
+func (g *gormUserRepository) BanUser(ctx context.Context, req *apiv1.BanUserRequest) (*apiv1.BanUserReply, error) {
+	if err := g.updateUserStatus(ctx, req.GetUid(), enum.UserStatus_BANNED); err != nil {
+		return nil, err
+	}
+	return &apiv1.BanUserReply{
+		Message: "user banned successfully",
+	}, nil
+}
+
+// PermitUser implements [v1.UserServer].
+func (g *gormUserRepository) PermitUser(ctx context.Context, req *apiv1.PermitUserRequest) (*apiv1.PermitUserReply, error) {
+	if err := g.updateUserStatus(ctx, req.GetUid(), enum.UserStatus_ACTIVE); err != nil {
+		return nil, err
+	}
+	return &apiv1.PermitUserReply{
+		Message: "user permitted successfully",
+	}, nil
+}
+
+// UpdateUserStatus implements [v1.UserServer].
+func (g *gormUserRepository) updateUserStatus(ctx context.Context, uid int64, status enum.UserStatus) error {
+	_, err := query.User.WithContext(ctx).Where(query.User.ID.Eq(uid)).UpdateColumnSimple(query.User.Status.Value(int32(status)))
+	if err != nil {
+		return merr.ErrorInternalServer("update user status failed: %v", err)
+	}
+	return nil
+}
+
 // GetUser implements [v1.UserServer].
 func (g *gormUserRepository) GetUser(ctx context.Context, req *apiv1.GetUserRequest) (*apiv1.UserItem, error) {
 	u, err := query.User.WithContext(ctx).Where(query.User.ID.Eq(req.GetUid())).First()
@@ -87,9 +116,9 @@ func (g *gormUserRepository) ListUser(ctx context.Context, req *apiv1.ListUserRe
 		items = append(items, convertUserItem(u))
 	}
 	return &apiv1.ListUserReply{
-		Items:   items,
-		Total:   total,
-		Page:    req.GetPage(),
+		Items:    items,
+		Total:    total,
+		Page:     req.GetPage(),
 		PageSize: req.GetPageSize(),
 	}, nil
 }
